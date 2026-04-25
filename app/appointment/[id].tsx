@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react'
 import { View, Text, ScrollView, Pressable, Alert } from 'react-native'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { appointmentRepository } from '@/services/appointmentRepository'
-import { useClientsStore } from '@/stores/useClientsStore'
 import { Appointment } from '@/domain/entities/appointment'
 import { Card } from '@/components/ui/Card'
 import { StatusBadge } from '@/components/appointments/StatusBadge'
@@ -11,18 +10,15 @@ import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
 import { Button } from '@/components/ui/Button'
 import { useAppointments } from '@/hooks/useAppointments'
 import { formatDate, formatTime, formatDuration } from '@/utils/dateUtils'
-import { formatCLP } from '@/utils/formatUtils'
+import { formatCLP, formatPhone } from '@/utils/formatUtils'
 import { SERVICE_LABELS } from '@/constants/services'
 
 export default function AppointmentDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>()
   const router = useRouter()
   const { remove } = useAppointments()
-  const { clients } = useClientsStore()
   const [appointment, setAppointment] = useState<Appointment | null>(null)
   const [isLoading, setIsLoading] = useState(true)
-
-  const client = clients.find((c) => c.id === appointment?.clientId)
 
   useEffect(() => {
     if (!id) return
@@ -64,9 +60,11 @@ export default function AppointmentDetailScreen() {
         <View className="flex-row justify-between items-start mb-4">
           <View>
             <Text className="text-xl font-bold text-neutral-900">
-              {client?.name ?? 'Cliente'}
+              {appointment.clientName}
             </Text>
-            <Text className="text-sm text-neutral-500">{client?.phone}</Text>
+            <Text className="text-sm text-neutral-500">
+              {appointment.clientPhone ? formatPhone(appointment.clientPhone) : ''}
+            </Text>
           </View>
           <StatusBadge status={appointment.status} />
         </View>

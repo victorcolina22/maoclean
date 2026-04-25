@@ -2,16 +2,12 @@ import React from 'react'
 import { View, Text } from 'react-native'
 import { useRouter } from 'expo-router'
 import { useAppointmentsStore } from '@/stores/useAppointmentsStore'
-import { useClientsStore } from '@/stores/useClientsStore'
 import { AppMapView } from '@/components/map/MapView'
 import { AppointmentMarker } from '@/components/map/AppointmentMarker'
 
 export default function MapaScreen() {
   const router = useRouter()
   const { appointments } = useAppointmentsStore()
-  const { clients } = useClientsStore()
-
-  const clientMap = Object.fromEntries(clients.map((c) => [c.id, c.name]))
 
   const withCoords = appointments.filter(
     (a) => a.location?.coordinates?.latitude && a.location?.coordinates?.longitude
@@ -30,7 +26,6 @@ export default function MapaScreen() {
           <AppointmentMarker
             key={a.id}
             appointment={a}
-            clientName={clientMap[a.clientId]}
             onPress={() => router.push(`/appointment/${a.id}`)}
           />
         ))}

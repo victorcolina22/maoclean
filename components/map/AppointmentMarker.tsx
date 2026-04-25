@@ -12,11 +12,10 @@ const Marker = isExpoGo ? null : (require('react-native-maps').Marker as any)
 
 interface AppointmentMarkerProps {
   appointment: Appointment
-  clientName?: string
   onPress?: () => void
 }
 
-export function AppointmentMarker({ appointment, clientName, onPress }: AppointmentMarkerProps) {
+export function AppointmentMarker({ appointment, onPress }: AppointmentMarkerProps) {
   if (isExpoGo || !Marker) return null
 
   const { latitude, longitude } = appointment.location.coordinates
@@ -24,7 +23,7 @@ export function AppointmentMarker({ appointment, clientName, onPress }: Appointm
   return (
     <Marker
       coordinate={{ latitude, longitude }}
-      title={clientName ?? 'Cliente'}
+      title={appointment.clientName}
       description={`${SERVICE_LABELS[appointment.serviceType]} · ${formatTime(appointment.scheduledAt)}`}
       onPress={onPress}
     >

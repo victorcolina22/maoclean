@@ -1,8 +1,7 @@
 import React, { useState } from 'react'
 import { View, Text, FlatList, Pressable, ScrollView } from 'react-native'
 import { useRouter } from 'expo-router'
-import { useAppointmentsStore } from '@/stores/useAppointmentsStore'
-import { useClientsStore } from '@/stores/useClientsStore'
+import { useAllAppointments } from '@/hooks/useAppointments'
 import { AppointmentCard } from '@/components/appointments/AppointmentCard'
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
 import { EmptyState } from '@/components/ui/EmptyState'
@@ -19,11 +18,8 @@ const STATUS_FILTERS: { label: string; value: AppointmentStatus | 'all' }[] = [
 
 export default function CitasScreen() {
   const router = useRouter()
-  const { appointments, isLoading } = useAppointmentsStore()
-  const { clients } = useClientsStore()
+  const { appointments, isLoading } = useAllAppointments()
   const [filter, setFilter] = useState<AppointmentStatus | 'all'>('all')
-
-  const clientMap = Object.fromEntries(clients.map((c) => [c.id, c.name]))
 
   const filtered = filter === 'all'
     ? appointments
@@ -76,7 +72,7 @@ export default function CitasScreen() {
           keyExtractor={(item) => item.id}
           contentContainerStyle={{ paddingHorizontal: 16, paddingTop: 8, paddingBottom: 32 }}
           renderItem={({ item }) => (
-            <AppointmentCard appointment={item} clientName={clientMap[item.clientId]} />
+            <AppointmentCard appointment={item} />
           )}
           ListEmptyComponent={
             <EmptyState

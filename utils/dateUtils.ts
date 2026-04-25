@@ -2,13 +2,21 @@ import dayjs from 'dayjs'
 import timezone from 'dayjs/plugin/timezone'
 import utc from 'dayjs/plugin/utc'
 import duration from 'dayjs/plugin/duration'
+import customParseFormat from 'dayjs/plugin/customParseFormat'
 import 'dayjs/locale/es'
 import { Timestamp } from 'firebase/firestore'
 
 dayjs.extend(utc)
 dayjs.extend(timezone)
 dayjs.extend(duration)
+dayjs.extend(customParseFormat)
 dayjs.locale('es')
+
+export const SCHEDULED_AT_FORMAT = 'YYYY-MM-DDTHH:mm'
+
+export function parseScheduledAt(value: string): dayjs.Dayjs {
+  return dayjs(value, SCHEDULED_AT_FORMAT, true)
+}
 
 const TZ = 'America/Santiago'
 

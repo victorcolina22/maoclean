@@ -39,10 +39,6 @@ export default function RootLayout() {
         name="appointment"
         options={{ headerShown: true, title: "Cita" }}
       />
-      <Stack.Screen
-        name="client"
-        options={{ headerShown: true, title: "Cliente" }}
-      />
     </Stack>
   );
 }

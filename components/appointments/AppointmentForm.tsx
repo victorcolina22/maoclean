@@ -4,12 +4,15 @@ import { useForm, Controller } from 'react-hook-form'
 import { Timestamp, GeoPoint } from 'firebase/firestore'
 import { Input } from '@/components/ui/Input'
 import { Button } from '@/components/ui/Button'
+import { DateTimePickerField } from '@/components/ui/DateTimePickerField'
 import { CreateAppointmentDTO, ServiceType, AppointmentStatus, PaymentStatus } from '@/domain/entities/appointment'
 import { SERVICE_LIST } from '@/constants/services'
 import { SANTIAGO_COMMUNES } from '@/constants/communes'
+import { parseScheduledAt } from '@/utils/dateUtils'
 
 interface FormValues {
-  clientId: string
+  clientName: string
+  clientPhone: string
   serviceType: ServiceType
   address: string
   commune: string
@@ -42,14 +45,15 @@ export function AppointmentForm({ defaultValues, onSubmit, isLoading, submitLabe
 
   const handleFormSubmit = async (values: FormValues) => {
     const dto: Omit<CreateAppointmentDTO, 'userId'> = {
-      clientId: values.clientId,
+      clientName: values.clientName,
+      clientPhone: values.clientPhone || undefined,
       serviceType: values.serviceType,
       location: {
         address: values.address,
         coordinates: new GeoPoint(0, 0),
         commune: values.commune,
       },
-      scheduledAt: Timestamp.fromDate(new Date(values.scheduledAt)),
+      scheduledAt: Timestamp.fromDate(parseScheduledAt(values.scheduledAt).toDate()),
       estimatedDuration: parseInt(values.estimatedDuration, 10),
       price: parseInt(values.price, 10),
       paymentStatus: values.paymentStatus,
@@ -63,15 +67,29 @@ export function AppointmentForm({ defaultValues, onSubmit, isLoading, submitLabe
     <ScrollView className="flex-1 px-4" keyboardShouldPersistTaps="handled">
       <Controller
         control={control}
-        name="clientId"
-        rules={{ required: 'Selecciona un cliente' }}
+        name="clientName"
+        rules={{ required: 'Ingresa el nombre del cliente' }}
         render={({ field: { onChange, value } }) => (
           <Input
-            label="ID del cliente"
-            placeholder="ID del cliente"
+            label="Nombre del cliente"
+            placeholder="Nombre del cliente"
             value={value}
             onChangeText={onChange}
-            error={errors.clientId?.message}
+            error={errors.clientName?.message}
+          />
+        )}
+      />
+
+      <Controller
+        control={control}
+        name="clientPhone"
+        render={({ field: { onChange, value } }) => (
+          <Input
+            label="Teléfono"
+            placeholder="+56 9 1234 5678"
+            value={value}
+            onChangeText={onChange}
+            keyboardType="phone-pad"
           />
         )}
       />
@@ -121,13 +139,15 @@ export function AppointmentForm({ defaultValues, onSubmit, isLoading, submitLabe
       <Controller
         control={control}
         name="scheduledAt"
-        rules={{ required: 'Ingresa fecha y hora' }}
+        rules={{
+          required: 'Selecciona fecha y hora',
+          validate: (v) => parseScheduledAt(v).isValid() || 'Fecha inválida',
+        }}
         render={({ field: { onChange, value } }) => (
-          <Input
-            label="Fecha y hora (YYYY-MM-DDTHH:mm)"
-            placeholder="2025-06-15T10:00"
-            value={value}
-            onChangeText={onChange}
+          <DateTimePickerField
+            label="Fecha y hora"
+            value={value ?? ''}
+            onChange={onChange}
             error={errors.scheduledAt?.message}
           />
         )}

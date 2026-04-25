@@ -27,7 +27,8 @@ export interface AppointmentLocation {
 export interface Appointment {
   id: string
   userId: string
-  clientId: string
+  clientName: string
+  clientPhone?: string
   serviceType: ServiceType
   location: AppointmentLocation
   scheduledAt: Timestamp
@@ -42,7 +43,8 @@ export interface Appointment {
 
 export interface CreateAppointmentDTO {
   userId: string
-  clientId: string
+  clientName: string
+  clientPhone?: string
   serviceType: ServiceType
   location: AppointmentLocation
   scheduledAt: Timestamp
@@ -54,7 +56,8 @@ export interface CreateAppointmentDTO {
 }
 
 export interface UpdateAppointmentDTO {
-  clientId?: string
+  clientName?: string
+  clientPhone?: string
   serviceType?: ServiceType
   location?: AppointmentLocation
   scheduledAt?: Timestamp

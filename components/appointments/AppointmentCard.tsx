@@ -11,10 +11,9 @@ import { SERVICE_LABELS } from '@/constants/services'
 
 interface AppointmentCardProps {
   appointment: Appointment
-  clientName?: string
 }
 
-export function AppointmentCard({ appointment, clientName }: AppointmentCardProps) {
+export function AppointmentCard({ appointment }: AppointmentCardProps) {
   const router = useRouter()
 
   return (
@@ -23,7 +22,7 @@ export function AppointmentCard({ appointment, clientName }: AppointmentCardProp
         <View className="flex-row justify-between items-start mb-2">
           <View className="flex-1">
             <Text className="text-base font-semibold text-neutral-900">
-              {clientName ?? 'Cliente'}
+              {appointment.clientName}
             </Text>
             <Text className="text-sm text-neutral-500">
               {SERVICE_LABELS[appointment.serviceType]}

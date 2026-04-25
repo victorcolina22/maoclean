@@ -48,7 +48,8 @@ export default function EditAppointmentScreen() {
 
   const defaultValues = appointment
     ? {
-        clientId: appointment.clientId,
+        clientName: appointment.clientName,
+        clientPhone: appointment.clientPhone ?? '',
         serviceType: appointment.serviceType,
         address: appointment.location.address,
         commune: appointment.location.commune,

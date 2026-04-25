@@ -1,7 +1,6 @@
 import { initializeApp, getApps } from 'firebase/app'
-import { initializeAuth, getAuth, getReactNativePersistence } from 'firebase/auth'
+import { initializeAuth, getAuth, inMemoryPersistence } from 'firebase/auth'
 import { getFirestore } from 'firebase/firestore'
-import { createAsyncStorage } from '@react-native-async-storage/async-storage'
 
 const firebaseConfig = {
   apiKey: process.env.EXPO_PUBLIC_FIREBASE_API_KEY ?? '',
@@ -15,9 +14,10 @@ const firebaseConfig = {
 const isNewApp = getApps().length === 0
 const app = isNewApp ? initializeApp(firebaseConfig) : getApps()[0]
 
-const appStorage = createAsyncStorage('app')
+// Firebase 12 removed getReactNativePersistence from the public API.
+// inMemoryPersistence is used until a custom AsyncStorage adapter is implemented.
 export const auth = isNewApp
-  ? initializeAuth(app, { persistence: getReactNativePersistence(appStorage) })
+  ? initializeAuth(app, { persistence: inMemoryPersistence })
   : getAuth(app)
 
 export const db = getFirestore(app)
