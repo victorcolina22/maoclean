@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react'
 import { View, Text, ScrollView, Pressable, Alert } from 'react-native'
 import { useLocalSearchParams, useRouter } from 'expo-router'
+import { Timestamp } from 'firebase/firestore'
 import { appointmentRepository } from '@/services/appointmentRepository'
-import { Appointment } from '@/domain/entities/appointment'
+import { Appointment, PaymentEntry } from '@/domain/entities/appointment'
 import { Card } from '@/components/ui/Card'
 import { StatusBadge } from '@/components/appointments/StatusBadge'
 import { PaymentBadge } from '@/components/appointments/PaymentBadge'
+import { PaymentSection } from '@/components/appointments/PaymentSection'
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
 import { Button } from '@/components/ui/Button'
 import { useAppointments } from '@/hooks/useAppointments'
@@ -13,11 +15,12 @@ import { formatDate, formatTime, formatDuration, toSantiago, computeDeliveryStat
 import { DeliveryStatusBadge } from '@/components/appointments/DeliveryStatusBadge'
 import { formatCLP, formatPhone } from '@/utils/formatUtils'
 import { SERVICE_LABELS } from '@/constants/services'
+import { remainingBalance } from '@/utils/paymentUtils'
 
 export default function AppointmentDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>()
   const router = useRouter()
-  const { remove } = useAppointments()
+  const { remove, addPayment } = useAppointments()
   const [appointment, setAppointment] = useState<Appointment | null>(null)
   const [isLoading, setIsLoading] = useState(true)
 
@@ -46,6 +49,24 @@ export default function AppointmentDetailScreen() {
         },
       ]
     )
+  }
+
+  const handleAddPayment = async (amount: number, note?: string) => {
+    if (!appointment) return
+    const entry: PaymentEntry = {
+      amount,
+      paidAt: Timestamp.fromDate(new Date()),
+      ...(note ? { note } : {}),
+    }
+    const result = await addPayment(appointment.id, entry)
+    if (result.success) setAppointment(result.data)
+  }
+
+  const handleMarkPaid = async () => {
+    if (!appointment) return
+    const remaining = remainingBalance(appointment.price, appointment.amountPaid)
+    if (remaining <= 0) return
+    await handleAddPayment(remaining, 'Marcado como pagado')
   }
 
   if (isLoading) return <LoadingSpinner fullScreen />
@@ -102,6 +123,12 @@ export default function AppointmentDetailScreen() {
           {appointment.notes && <Row label="Notas" value={appointment.notes} />}
         </View>
       </Card>
+
+      <PaymentSection
+        appointment={appointment}
+        onAddPayment={handleAddPayment}
+        onMarkPaid={handleMarkPaid}
+      />
 
       <View className="gap-3 mb-8">
         <Button

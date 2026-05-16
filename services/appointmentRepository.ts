@@ -12,21 +12,29 @@ import {
   serverTimestamp,
   Timestamp,
   Unsubscribe,
+  DocumentSnapshot,
+  arrayUnion,
 } from "firebase/firestore";
 import { db } from "./firebase";
 import {
   Appointment,
   CreateAppointmentDTO,
+  PaymentEntry,
   UpdateAppointmentDTO,
 } from "@/domain/entities/appointment";
 import { IAppointmentRepository } from "@/domain/interfaces/IAppointmentRepository";
 import { Result, ok, err } from "@/utils/result";
 import { startOfDay, endOfDay } from "@/utils/dateUtils";
+import { derivePaymentStatus } from "@/utils/paymentUtils";
 
 const COL = "appointments";
 
-function toAppointment(id: string, data: Record<string, unknown>): Appointment {
-  return { id, ...data } as Appointment;
+function toAppointment(snap: DocumentSnapshot): Appointment {
+  const data = snap.data()!
+  const amountPaid = (data.amountPaid as number) ?? 0
+  const paymentHistory = (data.paymentHistory as PaymentEntry[]) ?? []
+  const paymentStatus = derivePaymentStatus(amountPaid, data.price as number)
+  return { id: snap.id, ...data, amountPaid, paymentHistory, paymentStatus } as Appointment
 }
 
 function stripUndefined(obj: Record<string, unknown>): Record<string, unknown> {
@@ -49,7 +57,7 @@ export const appointmentRepository: IAppointmentRepository = {
       );
 
       const snap = await getDocs(q);
-      const appointments = snap.docs.map((d) => toAppointment(d.id, d.data()));
+      const appointments = snap.docs.map((d) => toAppointment(d));
       return ok(appointments);
     } catch {
       return err("No se pudieron cargar las citas.");
@@ -60,7 +68,7 @@ export const appointmentRepository: IAppointmentRepository = {
     try {
       const snap = await getDoc(doc(db, COL, id));
       if (!snap.exists()) return err("Cita no encontrada.");
-      return ok(toAppointment(snap.id, snap.data()));
+      return ok(toAppointment(snap));
     } catch {
       return err("No se pudo cargar la cita.");
     }
@@ -75,7 +83,7 @@ export const appointmentRepository: IAppointmentRepository = {
       });
       const ref = await addDoc(collection(db, COL), payload);
       const snap = await getDoc(ref);
-      return ok(toAppointment(snap.id, snap.data()!));
+      return ok(toAppointment(snap));
     } catch (e) {
       console.error("[appointmentRepository.create]", e);
       return err("No se pudo crear la cita. Intenta de nuevo.");
@@ -93,7 +101,7 @@ export const appointmentRepository: IAppointmentRepository = {
         stripUndefined({ ...data, updatedAt: serverTimestamp() }),
       );
       const snap = await getDoc(ref);
-      return ok(toAppointment(snap.id, snap.data()!));
+      return ok(toAppointment(snap));
     } catch {
       return err("No se pudo actualizar la cita.");
     }
@@ -124,7 +132,7 @@ export const appointmentRepository: IAppointmentRepository = {
     );
 
     return onSnapshot(q, (snap) => {
-      const appointments = snap.docs.map((d) => toAppointment(d.id, d.data()));
+      const appointments = snap.docs.map((d) => toAppointment(d));
       callback(appointments);
     });
   },
@@ -136,8 +144,29 @@ export const appointmentRepository: IAppointmentRepository = {
     const q = query(collection(db, COL), where("userId", "==", userId));
 
     return onSnapshot(q, (snap) => {
-      const appointments = snap.docs.map((d) => toAppointment(d.id, d.data()));
+      const appointments = snap.docs.map((d) => toAppointment(d));
       callback(appointments);
     });
+  },
+
+  async addPayment(id: string, entry: PaymentEntry): Promise<Result<Appointment>> {
+    try {
+      const ref = doc(db, 'appointments', id)
+      await updateDoc(ref, {
+        paymentHistory: arrayUnion(entry),
+        updatedAt: serverTimestamp(),
+      })
+      const snap = await getDoc(ref)
+      if (!snap.exists()) return err('Cita no encontrada.')
+      const data = snap.data()
+      const history = (data.paymentHistory as PaymentEntry[]) ?? []
+      const newAmountPaid = history.reduce((sum, e) => sum + e.amount, 0)
+      const newStatus = derivePaymentStatus(newAmountPaid, data.price as number)
+      await updateDoc(ref, { amountPaid: newAmountPaid, paymentStatus: newStatus })
+      const finalSnap = await getDoc(ref)
+      return ok(toAppointment(finalSnap))
+    } catch {
+      return err('No se pudo registrar el pago.')
+    }
   },
 };

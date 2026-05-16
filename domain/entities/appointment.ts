@@ -26,6 +26,12 @@ export interface AppointmentLocation {
   commune: string
 }
 
+export interface PaymentEntry {
+  amount: number
+  paidAt: Timestamp
+  note?: string
+}
+
 export interface Appointment {
   id: string
   userId: string
@@ -34,6 +40,8 @@ export interface Appointment {
   serviceType: ServiceType
   location: AppointmentLocation
   scheduledAt: Timestamp
+  amountPaid: number
+  paymentHistory: PaymentEntry[]
   deliveryDate?: Timestamp
   estimatedDuration: number
   price: number
@@ -51,6 +59,8 @@ export interface CreateAppointmentDTO {
   serviceType: ServiceType
   location: AppointmentLocation
   scheduledAt: Timestamp
+  amountPaid: number
+  paymentHistory: PaymentEntry[]
   deliveryDate?: Timestamp
   estimatedDuration: number
   price: number

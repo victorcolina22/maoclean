@@ -104,6 +104,8 @@ export function AppointmentForm({
       scheduledAt: Timestamp.fromDate(
         parseScheduledAt(values.scheduledAt).toDate(),
       ),
+      amountPaid: 0,
+      paymentHistory: [],
       deliveryDate: values.deliveryDate
         ? Timestamp.fromDate(parseScheduledAt(values.deliveryDate).toDate())
         : undefined,

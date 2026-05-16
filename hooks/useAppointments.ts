@@ -11,6 +11,7 @@ import {
 import {
   Appointment,
   CreateAppointmentDTO,
+  PaymentEntry,
   UpdateAppointmentDTO,
 } from "@/domain/entities/appointment";
 
@@ -80,7 +81,13 @@ export function useAppointments() {
     return result;
   }, []);
 
-  return { appointments, isLoading, error, create, update, remove };
+  const addPayment = useCallback(async (id: string, entry: PaymentEntry) => {
+    const result = await appointmentRepository.addPayment(id, entry)
+    if (!result.success) setError(result.error)
+    return result
+  }, [])
+
+  return { appointments, isLoading, error, create, update, remove, addPayment };
 }
 
 // fin all appointments for the user, regardless of date. Useful for calendar view or similar features.
