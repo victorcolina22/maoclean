@@ -31,6 +31,7 @@ interface FormValues {
   address: string;
   commune: string;
   scheduledAt: string;
+  deliveryDate: string;
   estimatedDuration: string;
   price: string;
   paymentStatus: PaymentStatus;
@@ -59,6 +60,7 @@ export function AppointmentForm({
     control,
     handleSubmit,
     setValue,
+    getValues,
     formState: { errors },
   } = useForm<FormValues>({
     defaultValues: {
@@ -67,6 +69,7 @@ export function AppointmentForm({
       status: "scheduled",
       estimatedDuration: "60",
       commune: "Santiago",
+      deliveryDate: "",
       ...defaultValues,
     },
   });
@@ -101,6 +104,9 @@ export function AppointmentForm({
       scheduledAt: Timestamp.fromDate(
         parseScheduledAt(values.scheduledAt).toDate(),
       ),
+      deliveryDate: values.deliveryDate
+        ? Timestamp.fromDate(parseScheduledAt(values.deliveryDate).toDate())
+        : undefined,
       estimatedDuration: parseInt(values.estimatedDuration, 10),
       price: parseInt(values.price, 10),
       paymentStatus: values.paymentStatus,
@@ -225,6 +231,30 @@ export function AppointmentForm({
               value={value ?? ""}
               onChange={onChange}
               error={errors.scheduledAt?.message}
+            />
+          )}
+        />
+
+        <Controller
+          control={control}
+          name="deliveryDate"
+          rules={{
+            validate: (v) => {
+              if (!v) return true
+              const scheduled = getValues('scheduledAt')
+              if (!scheduled) return true
+              return (
+                parseScheduledAt(v).isAfter(parseScheduledAt(scheduled)) ||
+                'La fecha de entrega debe ser posterior a la fecha de la cita'
+              )
+            },
+          }}
+          render={({ field: { onChange, value } }) => (
+            <DateTimePickerField
+              label="Fecha de entrega (opcional)"
+              value={value ?? ''}
+              onChange={onChange}
+              error={errors.deliveryDate?.message}
             />
           )}
         />

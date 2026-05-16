@@ -5,6 +5,7 @@ import duration from "dayjs/plugin/duration";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import "dayjs/locale/es";
 import { Timestamp } from "firebase/firestore";
+import { AppointmentStatus, DeliveryStatus } from "@/domain/entities/appointment";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -61,4 +62,17 @@ export function isToday(date: Date | Timestamp): boolean {
 
 export function toTimestamp(date: Date): Timestamp {
   return Timestamp.fromDate(date);
+}
+
+export function computeDeliveryStatus(
+  deliveryDate: Timestamp | undefined,
+  status: AppointmentStatus
+): DeliveryStatus | undefined {
+  if (!deliveryDate || status === 'completed') return undefined
+  const now = dayjs().tz(TZ)
+  const delivery = dayjs(deliveryDate.toDate()).tz(TZ)
+  const diffHours = delivery.diff(now, 'hour')
+  if (diffHours < 0) return 'late'
+  if (diffHours < 24) return 'soon'
+  return 'ok'
 }

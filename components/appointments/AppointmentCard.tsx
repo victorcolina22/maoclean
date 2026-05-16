@@ -5,7 +5,8 @@ import { Appointment } from '@/domain/entities/appointment'
 import { Card } from '@/components/ui/Card'
 import { StatusBadge } from './StatusBadge'
 import { PaymentBadge } from './PaymentBadge'
-import { formatTime, formatDuration } from '@/utils/dateUtils'
+import { formatTime, formatDuration, computeDeliveryStatus } from '@/utils/dateUtils'
+import { DeliveryStatusBadge } from './DeliveryStatusBadge'
 import { formatCLP } from '@/utils/formatUtils'
 import { SERVICE_LABELS } from '@/constants/services'
 
@@ -15,6 +16,7 @@ interface AppointmentCardProps {
 
 export function AppointmentCard({ appointment }: AppointmentCardProps) {
   const router = useRouter()
+  const deliveryStatus = computeDeliveryStatus(appointment.deliveryDate, appointment.status)
 
   return (
     <Pressable onPress={() => router.push(`/appointment/${appointment.id}`)}>
@@ -41,6 +43,9 @@ export function AppointmentCard({ appointment }: AppointmentCardProps) {
           <View className="flex-row gap-2">
             <StatusBadge status={appointment.status} />
             <PaymentBadge status={appointment.paymentStatus} />
+            {(deliveryStatus === 'soon' || deliveryStatus === 'late') && (
+              <DeliveryStatusBadge status={deliveryStatus} />
+            )}
           </View>
           <View className="items-end">
             <Text className="text-sm font-semibold text-neutral-800">

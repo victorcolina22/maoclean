@@ -85,6 +85,9 @@ export default function EditAppointmentScreen() {
         scheduledAt: toSantiago(appointment.scheduledAt).format(
           "YYYY-MM-DDTHH:mm",
         ),
+        deliveryDate: appointment.deliveryDate
+          ? toSantiago(appointment.deliveryDate).format('YYYY-MM-DDTHH:mm')
+          : '',
         estimatedDuration: String(appointment.estimatedDuration),
         price: String(appointment.price),
         paymentStatus: appointment.paymentStatus,

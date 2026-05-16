@@ -1,5 +1,7 @@
 import { GeoPoint, Timestamp } from 'firebase/firestore'
 
+export type DeliveryStatus = 'ok' | 'soon' | 'late'
+
 export type ServiceType =
   | 'sillas'
   | 'muebles'
@@ -32,6 +34,7 @@ export interface Appointment {
   serviceType: ServiceType
   location: AppointmentLocation
   scheduledAt: Timestamp
+  deliveryDate?: Timestamp
   estimatedDuration: number
   price: number
   paymentStatus: PaymentStatus
@@ -48,6 +51,7 @@ export interface CreateAppointmentDTO {
   serviceType: ServiceType
   location: AppointmentLocation
   scheduledAt: Timestamp
+  deliveryDate?: Timestamp
   estimatedDuration: number
   price: number
   paymentStatus: PaymentStatus
@@ -61,6 +65,7 @@ export interface UpdateAppointmentDTO {
   serviceType?: ServiceType
   location?: AppointmentLocation
   scheduledAt?: Timestamp
+  deliveryDate?: Timestamp
   estimatedDuration?: number
   price?: number
   paymentStatus?: PaymentStatus
