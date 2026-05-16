@@ -31,7 +31,7 @@ export default function NewAppointmentScreen() {
         message: "Cita creada correctamente",
         type: "success",
       });
-      setTimeout(() => router.back(), 1500);
+      router.back();
     } else {
       console.log(result);
       setToast({ visible: true, message: result.error, type: "error" });
