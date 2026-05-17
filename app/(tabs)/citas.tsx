@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from "react";
 import { View, Text, FlatList, Pressable, ScrollView } from "react-native";
 import { useRouter } from "expo-router";
+import AppBar from "@/components/ui/AppBar";
 import { useAllAppointments } from "@/hooks/useAppointments";
 import { AppointmentCard } from "@/components/appointments/AppointmentCard";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
@@ -42,15 +43,17 @@ export default function CitasScreen() {
 
   return (
     <View className="flex-1 bg-neutral-50">
-      <View className="px-4 pt-4 pb-2 flex-row justify-between items-center">
-        <Text className="text-2xl font-bold text-neutral-900">Citas</Text>
-        <Pressable
-          onPress={() => router.push("/appointment/new")}
-          className="bg-primary-600 rounded-xl px-4 py-2"
-        >
-          <Text className="text-white font-semibold">+ Nueva</Text>
-        </Pressable>
-      </View>
+      <AppBar
+        title="Citas"
+        rightSlot={
+          <Pressable
+            onPress={() => router.push("/appointment/new")}
+            className="bg-primary-600 rounded-xl px-4 py-2"
+          >
+            <Text className="text-white font-semibold">+ Nueva</Text>
+          </Pressable>
+        }
+      />
 
       {/* Status filter */}
       <ScrollView

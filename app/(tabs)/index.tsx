@@ -8,6 +8,7 @@ import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Button } from "@/components/ui/Button";
 import { formatDate } from "@/utils/dateUtils";
+import AppBar from "@/components/ui/AppBar";
 
 export default function HomeScreen() {
   const router = useRouter();
@@ -20,20 +21,18 @@ export default function HomeScreen() {
 
   return (
     <View className="flex-1 bg-neutral-50">
-      <View className="px-4 pt-4 pb-2 flex-row justify-between items-center">
-        <View>
-          <Text className="text-2xl font-bold text-neutral-900">Hoy</Text>
-          <Text className="text-sm text-neutral-500 capitalize">
-            {formatDate(today)}
-          </Text>
-        </View>
-        <Pressable
-          onPress={() => router.push("/appointment/new")}
-          className="bg-primary-600 rounded-xl px-4 py-2"
-        >
-          <Text className="text-white font-semibold">+ Cita</Text>
-        </Pressable>
-      </View>
+      <AppBar
+        title="Hoy"
+        subtitle={formatDate(today)}
+        rightSlot={
+          <Pressable
+            onPress={() => router.push("/appointment/new")}
+            className="bg-primary-600 rounded-xl px-4 py-2"
+          >
+            <Text className="text-white font-semibold">+ Cita</Text>
+          </Pressable>
+        }
+      />
 
       {isLoading ? (
         <LoadingSpinner fullScreen />

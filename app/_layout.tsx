@@ -1,6 +1,7 @@
 import "../global.css";
 import React, { useEffect } from "react";
 import { Stack, useRouter, useSegments } from "expo-router";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { onAuthChange } from "@/services/authService";
 import { requestNotificationPermission } from "@/services/notificationService";
@@ -32,13 +33,19 @@ export default function RootLayout() {
   }, [user, isLoading, segments]);
 
   return (
-    <Stack screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="(auth)" />
-      <Stack.Screen name="(tabs)" />
-      <Stack.Screen
-        name="appointment"
-        options={{ headerShown: true, title: "Cita" }}
-      />
-    </Stack>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="(auth)" />
+        <Stack.Screen name="(tabs)" />
+        <Stack.Screen
+          name="appointment"
+          options={{ headerShown: true, title: "Cita" }}
+        />
+        <Stack.Screen name="clientes" options={{ headerShown: true, title: "Clientes" }} />
+        <Stack.Screen name="metricas" options={{ headerShown: true, title: "Métricas" }} />
+        <Stack.Screen name="notificaciones" options={{ headerShown: true, title: "Notificaciones" }} />
+        <Stack.Screen name="ajustes" options={{ headerShown: true, title: "Ajustes" }} />
+      </Stack>
+    </GestureHandlerRootView>
   );
 }
