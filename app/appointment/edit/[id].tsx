@@ -79,7 +79,14 @@ export default function EditAppointmentScreen() {
     ? {
         clientName: appointment.clientName,
         clientPhone: appointment.clientPhone ?? "",
-        serviceType: appointment.serviceType,
+        items: appointment.items?.length
+          ? appointment.items.map((it) => ({
+              type: it.type,
+              label: it.label,
+              qty: String(it.qty),
+              unitPrice: String(it.unitPrice),
+            }))
+          : [{ type: 'casa' as const, label: 'Casa', qty: '1', unitPrice: '' }],
         address: appointment.location.address,
         commune: appointment.location.commune,
         scheduledAt: toSantiago(appointment.scheduledAt).format(
@@ -89,7 +96,6 @@ export default function EditAppointmentScreen() {
           ? toSantiago(appointment.deliveryDate).format('YYYY-MM-DDTHH:mm')
           : '',
         estimatedDuration: String(appointment.estimatedDuration),
-        price: String(appointment.price),
         paymentStatus: appointment.paymentStatus,
         status: appointment.status,
         notes: appointment.notes ?? "",

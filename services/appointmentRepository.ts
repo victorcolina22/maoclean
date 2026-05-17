@@ -13,6 +13,7 @@ import {
   Timestamp,
   Unsubscribe,
   DocumentSnapshot,
+  DocumentData,
   arrayUnion,
 } from "firebase/firestore";
 import { db } from "./firebase";
@@ -20,8 +21,11 @@ import {
   Appointment,
   CreateAppointmentDTO,
   PaymentEntry,
+  ServiceItem,
+  ServiceType,
   UpdateAppointmentDTO,
 } from "@/domain/entities/appointment";
+import { SERVICE_LABELS } from "@/constants/services";
 import { IAppointmentRepository } from "@/domain/interfaces/IAppointmentRepository";
 import { Result, ok, err } from "@/utils/result";
 import { startOfDay, endOfDay } from "@/utils/dateUtils";
@@ -29,12 +33,41 @@ import { derivePaymentStatus } from "@/utils/paymentUtils";
 
 const COL = "appointments";
 
+function normalizeItems(data: DocumentData): ServiceItem[] {
+  if (Array.isArray(data.items) && data.items.length > 0) {
+    return (data.items as ServiceItem[]).map((it) => ({
+      type: (it.type ?? 'otro') as ServiceType,
+      label: it.label ?? SERVICE_LABELS[(it.type ?? 'otro') as ServiceType],
+      qty: Number(it.qty) || 1,
+      unitPrice: Number(it.unitPrice) || 0,
+    }))
+  }
+  const legacyType = (data.serviceType ?? 'otro') as ServiceType
+  const legacyPrice = Number(data.price) || 0
+  return [{
+    type: legacyType,
+    label: SERVICE_LABELS[legacyType] ?? SERVICE_LABELS.otro,
+    qty: 1,
+    unitPrice: legacyPrice,
+  }]
+}
+
 function toAppointment(snap: DocumentSnapshot): Appointment {
   const data = snap.data()!
+  const items = normalizeItems(data)
+  const price = items.reduce((sum, it) => sum + it.qty * it.unitPrice, 0)
   const amountPaid = (data.amountPaid as number) ?? 0
   const paymentHistory = (data.paymentHistory as PaymentEntry[]) ?? []
-  const paymentStatus = derivePaymentStatus(amountPaid, data.price as number)
-  return { id: snap.id, ...data, amountPaid, paymentHistory, paymentStatus } as Appointment
+  const paymentStatus = derivePaymentStatus(amountPaid, price)
+  return {
+    id: snap.id,
+    ...data,
+    items,
+    price,
+    amountPaid,
+    paymentHistory,
+    paymentStatus,
+  } as Appointment
 }
 
 function stripUndefined(obj: Record<string, unknown>): Record<string, unknown> {
@@ -161,7 +194,8 @@ export const appointmentRepository: IAppointmentRepository = {
       const data = snap.data()
       const history = (data.paymentHistory as PaymentEntry[]) ?? []
       const newAmountPaid = history.reduce((sum, e) => sum + e.amount, 0)
-      const newStatus = derivePaymentStatus(newAmountPaid, data.price as number)
+      const computedPrice = normalizeItems(data).reduce((sum, it) => sum + it.qty * it.unitPrice, 0)
+      const newStatus = derivePaymentStatus(newAmountPaid, computedPrice)
       await updateDoc(ref, { amountPaid: newAmountPaid, paymentStatus: newStatus })
       const finalSnap = await getDoc(ref)
       return ok(toAppointment(finalSnap))

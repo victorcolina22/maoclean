@@ -2,7 +2,7 @@ import React from 'react'
 import { View, Text } from 'react-native'
 import Constants from 'expo-constants'
 import { Appointment } from '@/domain/entities/appointment'
-import { SERVICE_LABELS } from '@/constants/services'
+import { summarizeItems } from '@/constants/services'
 import { formatTime } from '@/utils/dateUtils'
 
 const isExpoGo = Constants.appOwnership === 'expo'
@@ -24,7 +24,7 @@ export function AppointmentMarker({ appointment, onPress }: AppointmentMarkerPro
     <Marker
       coordinate={{ latitude, longitude }}
       title={appointment.clientName}
-      description={`${SERVICE_LABELS[appointment.serviceType]} · ${formatTime(appointment.scheduledAt)}`}
+      description={`${summarizeItems(appointment.items)} · ${formatTime(appointment.scheduledAt)}`}
       onPress={onPress}
     >
       <View className="bg-primary-600 rounded-full w-8 h-8 items-center justify-center border-2 border-white shadow">

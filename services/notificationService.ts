@@ -2,7 +2,7 @@ import * as Notifications from 'expo-notifications'
 import { Platform } from 'react-native'
 import { Appointment } from '@/domain/entities/appointment'
 import { toSantiago } from '@/utils/dateUtils'
-import { SERVICE_LABELS } from '@/constants/services'
+import { summarizeItems } from '@/constants/services'
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -28,7 +28,7 @@ export async function requestNotificationPermission(): Promise<boolean> {
 
 export async function scheduleAppointmentReminder(appointment: Appointment): Promise<void> {
   const scheduledAt = toSantiago(appointment.scheduledAt)
-  const serviceLabel = SERVICE_LABELS[appointment.serviceType]
+  const serviceLabel = summarizeItems(appointment.items)
 
   const reminder24h = scheduledAt.subtract(24, 'hour').toDate()
   const reminder1h = scheduledAt.subtract(1, 'hour').toDate()

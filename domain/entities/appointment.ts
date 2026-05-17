@@ -32,18 +32,26 @@ export interface PaymentEntry {
   note?: string
 }
 
+export interface ServiceItem {
+  type: ServiceType
+  label: string
+  qty: number
+  unitPrice: number
+}
+
 export interface Appointment {
   id: string
   userId: string
   clientName: string
   clientPhone?: string
-  serviceType: ServiceType
+  items: ServiceItem[]
   location: AppointmentLocation
   scheduledAt: Timestamp
   amountPaid: number
   paymentHistory: PaymentEntry[]
   deliveryDate?: Timestamp
   estimatedDuration: number
+  // Computed: sum of items[].qty * items[].unitPrice. Not stored in Firestore.
   price: number
   paymentStatus: PaymentStatus
   status: AppointmentStatus
@@ -56,14 +64,13 @@ export interface CreateAppointmentDTO {
   userId: string
   clientName: string
   clientPhone?: string
-  serviceType: ServiceType
+  items: ServiceItem[]
   location: AppointmentLocation
   scheduledAt: Timestamp
   amountPaid: number
   paymentHistory: PaymentEntry[]
   deliveryDate?: Timestamp
   estimatedDuration: number
-  price: number
   paymentStatus: PaymentStatus
   status: AppointmentStatus
   notes?: string
@@ -72,12 +79,11 @@ export interface CreateAppointmentDTO {
 export interface UpdateAppointmentDTO {
   clientName?: string
   clientPhone?: string
-  serviceType?: ServiceType
+  items?: ServiceItem[]
   location?: AppointmentLocation
   scheduledAt?: Timestamp
   deliveryDate?: Timestamp
   estimatedDuration?: number
-  price?: number
   paymentStatus?: PaymentStatus
   status?: AppointmentStatus
   notes?: string

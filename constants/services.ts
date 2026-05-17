@@ -1,4 +1,4 @@
-import { ServiceType } from '@/domain/entities/appointment'
+import type { ServiceItem, ServiceType } from '@/domain/entities/appointment'
 
 export const SERVICE_LABELS: Record<ServiceType, string> = {
   sillas: 'Sillas',
@@ -19,3 +19,16 @@ export const SERVICE_LIST: { value: ServiceType; label: string }[] = [
   { value: 'carro', label: 'Carro' },
   { value: 'otro', label: 'Otro' },
 ]
+
+export function summarizeItems(items: ServiceItem[]): string {
+  if (!items || items.length === 0) return '—'
+  const seen = new Set<string>()
+  const distinct: string[] = []
+  for (const it of items) {
+    if (!seen.has(it.label)) {
+      seen.add(it.label)
+      distinct.push(it.label)
+    }
+  }
+  return distinct.join(', ')
+}

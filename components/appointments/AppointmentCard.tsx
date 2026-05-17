@@ -8,7 +8,7 @@ import { PaymentBadge } from './PaymentBadge'
 import { formatTime, formatDuration, computeDeliveryStatus } from '@/utils/dateUtils'
 import { DeliveryStatusBadge } from './DeliveryStatusBadge'
 import { formatCLP } from '@/utils/formatUtils'
-import { SERVICE_LABELS } from '@/constants/services'
+import { summarizeItems } from '@/constants/services'
 
 interface AppointmentCardProps {
   appointment: Appointment
@@ -26,8 +26,8 @@ export function AppointmentCard({ appointment }: AppointmentCardProps) {
             <Text className="text-base font-semibold text-neutral-900">
               {appointment.clientName}
             </Text>
-            <Text className="text-sm text-neutral-500">
-              {SERVICE_LABELS[appointment.serviceType]}
+            <Text className="text-sm text-neutral-500" numberOfLines={1}>
+              {summarizeItems(appointment.items)}
             </Text>
           </View>
           <Text className="text-base font-bold text-neutral-900">

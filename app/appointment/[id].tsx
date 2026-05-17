@@ -14,7 +14,7 @@ import { useAppointments } from '@/hooks/useAppointments'
 import { formatDate, formatTime, formatDuration, toSantiago, computeDeliveryStatus } from '@/utils/dateUtils'
 import { DeliveryStatusBadge } from '@/components/appointments/DeliveryStatusBadge'
 import { formatCLP, formatPhone } from '@/utils/formatUtils'
-import { SERVICE_LABELS } from '@/constants/services'
+import { summarizeItems } from '@/constants/services'
 import { remainingBalance } from '@/utils/paymentUtils'
 
 export default function AppointmentDetailScreen() {
@@ -92,7 +92,7 @@ export default function AppointmentDetailScreen() {
         </View>
 
         <View className="gap-3">
-          <Row label="Servicio" value={SERVICE_LABELS[appointment.serviceType]} />
+          <Row label="Servicios" value={summarizeItems(appointment.items)} />
           <Row label="Fecha" value={formatDate(appointment.scheduledAt)} />
           <Row label="Hora" value={formatTime(appointment.scheduledAt)} />
           {appointment.deliveryDate && (
