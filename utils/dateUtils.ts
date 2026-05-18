@@ -3,6 +3,7 @@ import timezone from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";
 import duration from "dayjs/plugin/duration";
 import customParseFormat from "dayjs/plugin/customParseFormat";
+import isoWeek from 'dayjs/plugin/isoWeek'
 import "dayjs/locale/es";
 import { Timestamp } from "firebase/firestore";
 import { AppointmentStatus, DeliveryStatus } from "@/domain/entities/appointment";
@@ -11,6 +12,7 @@ dayjs.extend(utc);
 dayjs.extend(timezone);
 dayjs.extend(duration);
 dayjs.extend(customParseFormat);
+dayjs.extend(isoWeek);
 dayjs.locale("es");
 
 export const SCHEDULED_AT_FORMAT = "YYYY-MM-DDTHH:mm";
@@ -62,6 +64,18 @@ export function isToday(date: Date | Timestamp): boolean {
 
 export function toTimestamp(date: Date): Timestamp {
   return Timestamp.fromDate(date);
+}
+
+export function startOfWeek(date: Date): Date {
+  return dayjs(date).tz(TZ).startOf('isoWeek').toDate()
+}
+
+export function endOfWeek(date: Date): Date {
+  return dayjs(date).tz(TZ).endOf('isoWeek').toDate()
+}
+
+export function isInCurrentWeek(ts: Timestamp): boolean {
+  return dayjs(ts.toDate()).tz(TZ).isSame(dayjs().tz(TZ), 'isoWeek')
 }
 
 export function computeDeliveryStatus(

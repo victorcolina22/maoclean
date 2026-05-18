@@ -45,6 +45,7 @@ export default function RootLayout() {
         <Stack.Screen name="metricas" options={{ headerShown: true, title: "Métricas" }} />
         <Stack.Screen name="notificaciones" options={{ headerShown: true, title: "Notificaciones" }} />
         <Stack.Screen name="ajustes" options={{ headerShown: true, title: "Ajustes" }} />
+        <Stack.Screen name="filter" options={{ headerShown: false }} />
       </Stack>
     </GestureHandlerRootView>
   );

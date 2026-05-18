@@ -7,6 +7,7 @@ interface AppBarProps {
   title: string
   subtitle?: string
   showHamburger?: boolean
+  leftSlot?: React.ReactNode
   rightSlot?: React.ReactNode
 }
 
@@ -16,6 +17,7 @@ export default function AppBar({
   title,
   subtitle,
   showHamburger = true,
+  leftSlot,
   rightSlot,
 }: AppBarProps) {
   const insets = useSafeAreaInsets()
@@ -26,7 +28,7 @@ export default function AppBar({
       className="bg-white border-b border-neutral-200 flex-row items-center px-4 pb-3"
       style={{ paddingTop: insets.top + 12 }}
     >
-      {showHamburger && (
+      {leftSlot ? leftSlot : showHamburger && (
         <Pressable onPress={toggleDrawer} className="mr-3 p-1">
           <Text className="text-neutral-700 text-xl">☰</Text>
         </Pressable>
