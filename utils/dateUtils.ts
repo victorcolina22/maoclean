@@ -74,6 +74,14 @@ export function endOfWeek(date: Date): Date {
   return dayjs(date).tz(TZ).endOf('isoWeek').toDate()
 }
 
+export function startOfMonth(date: Date): Date {
+  return dayjs(date).tz(TZ).startOf('month').toDate()
+}
+
+export function endOfMonth(date: Date): Date {
+  return dayjs(date).tz(TZ).endOf('month').toDate()
+}
+
 export function isInCurrentWeek(ts: Timestamp): boolean {
   return dayjs(ts.toDate()).tz(TZ).isSame(dayjs().tz(TZ), 'isoWeek')
 }
