@@ -3,11 +3,13 @@ import { useAuthStore } from "@/stores/useAuthStore";
 import { useAppointmentsStore } from "@/stores/useAppointmentsStore";
 import { useProximityStore } from "@/stores/useProximityStore";
 import { appointmentRepository } from "@/services/appointmentRepository";
+import { userSettingsRepository } from "@/services/userSettingsRepository";
 import { calculateProximity } from "@/services/proximityService";
 import {
   scheduleAppointmentReminder,
   cancelAppointmentReminders,
 } from "@/services/notificationService";
+import { DEFAULT_NOTIFICATION_SETTINGS } from "@/domain/entities/userSettings";
 import {
   Appointment,
   CreateAppointmentDTO,
@@ -17,6 +19,12 @@ import {
 
 export function useAppointments() {
   const { user } = useAuthStore();
+
+  const resolveSettings = async () => {
+    if (!user?.uid) return DEFAULT_NOTIFICATION_SETTINGS
+    const r = await userSettingsRepository.getSettings(user.uid)
+    return r.success ? r.data : DEFAULT_NOTIFICATION_SETTINGS
+  }
   const {
     appointments,
     selectedDate,
@@ -55,7 +63,8 @@ export function useAppointments() {
         userId: user.uid,
       });
       if (result.success) {
-        await scheduleAppointmentReminder(result.data);
+        const settings = await resolveSettings()
+        await scheduleAppointmentReminder(result.data, settings);
       } else {
         setError(result.error);
       }
@@ -69,7 +78,8 @@ export function useAppointments() {
     if (!result.success) setError(result.error);
     if (result.success && data.scheduledAt) {
       await cancelAppointmentReminders(id);
-      await scheduleAppointmentReminder(result.data);
+      const settings = await resolveSettings()
+      await scheduleAppointmentReminder(result.data, settings);
     }
     return result;
   }, []);

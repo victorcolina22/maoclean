@@ -1,6 +1,7 @@
 import * as Notifications from 'expo-notifications'
 import { Platform } from 'react-native'
 import { Appointment } from '@/domain/entities/appointment'
+import { UserNotificationSettings, DEFAULT_NOTIFICATION_SETTINGS } from '@/domain/entities/userSettings'
 import { toSantiago } from '@/utils/dateUtils'
 import { summarizeItems } from '@/constants/services'
 
@@ -26,7 +27,12 @@ export async function requestNotificationPermission(): Promise<boolean> {
   return status === 'granted'
 }
 
-export async function scheduleAppointmentReminder(appointment: Appointment): Promise<void> {
+export async function scheduleAppointmentReminder(
+  appointment: Appointment,
+  settings: UserNotificationSettings = DEFAULT_NOTIFICATION_SETTINGS,
+): Promise<void> {
+  if (!settings.remindersEnabled) return
+
   const scheduledAt = toSantiago(appointment.scheduledAt)
   const serviceLabel = summarizeItems(appointment.items)
 
@@ -34,7 +40,7 @@ export async function scheduleAppointmentReminder(appointment: Appointment): Pro
   const reminder1h = scheduledAt.subtract(1, 'hour').toDate()
   const now = new Date()
 
-  if (reminder24h > now) {
+  if (settings.remind24h && reminder24h > now) {
     await Notifications.scheduleNotificationAsync({
       content: {
         title: 'Recordatorio de cita',
@@ -45,7 +51,7 @@ export async function scheduleAppointmentReminder(appointment: Appointment): Pro
     })
   }
 
-  if (reminder1h > now) {
+  if (settings.remind1h && reminder1h > now) {
     await Notifications.scheduleNotificationAsync({
       content: {
         title: 'Cita en 1 hora',
@@ -62,5 +68,11 @@ export async function cancelAppointmentReminders(appointmentId: string): Promise
   const toCancel = scheduled.filter(
     (n) => n.content.data?.appointmentId === appointmentId
   )
+  await Promise.all(toCancel.map((n) => Notifications.cancelScheduledNotificationAsync(n.identifier)))
+}
+
+export async function cancelAllAppointmentReminders(): Promise<void> {
+  const scheduled = await Notifications.getAllScheduledNotificationsAsync()
+  const toCancel = scheduled.filter((n) => n.content.data?.appointmentId !== undefined)
   await Promise.all(toCancel.map((n) => Notifications.cancelScheduledNotificationAsync(n.identifier)))
 }
