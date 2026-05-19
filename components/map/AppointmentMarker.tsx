@@ -13,9 +13,10 @@ const Marker = isExpoGo ? null : (require('react-native-maps').Marker as any)
 interface AppointmentMarkerProps {
   appointment: Appointment
   onPress?: () => void
+  color?: string
 }
 
-export function AppointmentMarker({ appointment, onPress }: AppointmentMarkerProps) {
+export function AppointmentMarker({ appointment, onPress, color }: AppointmentMarkerProps) {
   if (isExpoGo || !Marker) return null
 
   const { latitude, longitude } = appointment.location.coordinates
@@ -27,7 +28,10 @@ export function AppointmentMarker({ appointment, onPress }: AppointmentMarkerPro
       description={`${summarizeItems(appointment.items)} · ${formatTime(appointment.scheduledAt)}`}
       onPress={onPress}
     >
-      <View className="bg-primary-600 rounded-full w-8 h-8 items-center justify-center border-2 border-white shadow">
+      <View
+        className="rounded-full w-8 h-8 items-center justify-center border-2 border-white shadow"
+        style={{ backgroundColor: color ?? '#2563EB' }}
+      >
         <Text className="text-white text-xs font-bold">
           {formatTime(appointment.scheduledAt).slice(0, 2)}
         </Text>
