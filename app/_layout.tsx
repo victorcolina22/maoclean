@@ -42,10 +42,19 @@ export default function RootLayout() {
           options={{ headerShown: true, title: "Cita" }}
         />
         <Stack.Screen name="clientes" options={{ headerShown: false }} />
-        <Stack.Screen name="metricas" options={{ headerShown: true, title: "Métricas" }} />
-        <Stack.Screen name="notificaciones" options={{ headerShown: true, title: "Notificaciones" }} />
-        <Stack.Screen name="ajustes" options={{ headerShown: true, title: "Ajustes" }} />
-        <Stack.Screen name="ajustes/zonas" options={{ headerShown: true, title: "Zonas" }} />
+        <Stack.Screen name="metricas" options={{ headerShown: false }} />
+        <Stack.Screen
+          name="notificaciones"
+          options={{ headerShown: true, title: "Notificaciones" }}
+        />
+        <Stack.Screen
+          name="ajustes"
+          options={{ headerShown: true, title: "Ajustes" }}
+        />
+        <Stack.Screen
+          name="ajustes/zonas"
+          options={{ headerShown: true, title: "Zonas" }}
+        />
         <Stack.Screen name="filter" options={{ headerShown: false }} />
       </Stack>
     </GestureHandlerRootView>

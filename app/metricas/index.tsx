@@ -7,7 +7,6 @@ import { SegmentedControl } from "@/components/calendar/SegmentedControl";
 import { MetricCard } from "./_components/MetricCard";
 import { MetricSection } from "./_components/MetricSection";
 import { TopClientsList } from "./_components/TopClientsList";
-import { SafeAreaView } from "react-native-safe-area-context";
 
 const PERIOD_OPTIONS: { label: string; value: MetricsPeriod }[] = [
   { label: "Semana", value: "week" },
@@ -33,7 +32,7 @@ export default function MetricasScreen() {
   }
 
   return (
-    <SafeAreaView className="flex-1">
+    <View className="flex-1">
       <ScrollView
         className="bg-white"
         contentContainerStyle={{ paddingBottom: 32 }}
@@ -82,6 +81,6 @@ export default function MetricasScreen() {
           />
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 }

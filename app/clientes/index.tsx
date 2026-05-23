@@ -9,7 +9,6 @@ import { SegmentedControl } from "@/components/calendar/SegmentedControl";
 import { Input } from "@/components/ui/Input";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { EmptyState } from "@/components/ui/EmptyState";
-import { SafeAreaView } from "react-native-safe-area-context";
 
 const SORT_OPTIONS: { label: string; value: ClientSort }[] = [
   { label: "Nombre", value: "name" },
@@ -33,8 +32,8 @@ export default function ClientesScreen() {
   if (isLoading) return <LoadingSpinner fullScreen />;
 
   return (
-    <SafeAreaView className="flex-1 bg-neutral-50">
-      <View className="px-4 pb-2">
+    <View className="flex-1 bg-neutral-50">
+      <View className="px-4 pt-4">
         <Input
           placeholder="Buscar cliente..."
           value={query}
@@ -70,6 +69,6 @@ export default function ClientesScreen() {
           />
         }
       />
-    </SafeAreaView>
+    </View>
   );
 }
