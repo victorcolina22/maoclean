@@ -1,12 +1,15 @@
-import React from 'react'
-import { View, Text, Pressable } from 'react-native'
-import { useRouter } from 'expo-router'
-import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import React from "react";
+import { View, Text, Pressable } from "react-native";
+import { useRouter } from "expo-router";
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
 
 interface NavRowProps {
-  label: string
-  description: string
-  onPress: () => void
+  label: string;
+  description: string;
+  onPress: () => void;
 }
 
 function NavRow({ label, description, onPress }: NavRowProps) {
@@ -21,20 +24,23 @@ function NavRow({ label, description, onPress }: NavRowProps) {
       </View>
       <Text className="text-neutral-400 text-base ml-2">›</Text>
     </Pressable>
-  )
+  );
 }
 
 export default function AjustesScreen() {
-  const router = useRouter()
-  const insets = useSafeAreaInsets()
+  const router = useRouter();
+  const insets = useSafeAreaInsets();
 
   return (
-    <View className="flex-1 bg-neutral-50 px-4" style={{ paddingTop: 16, paddingBottom: insets.bottom + 16 }}>
+    <SafeAreaView
+      className="flex-1 bg-neutral-50 px-4"
+      style={{ paddingTop: 16, paddingBottom: insets.bottom + 16 }}
+    >
       <NavRow
         label="Zonas"
         description="Agrupa comunas para colorear el mapa y organizar rutas"
-        onPress={() => router.push('/ajustes/zonas')}
+        onPress={() => router.push("/ajustes/zonas")}
       />
-    </View>
-  )
+    </SafeAreaView>
+  );
 }

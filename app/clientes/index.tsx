@@ -1,36 +1,40 @@
-import React, { useState, useMemo } from 'react'
-import { View, FlatList, Text } from 'react-native'
-import { useRouter } from 'expo-router'
-import { useAllAppointments } from '@/hooks/useAppointments'
-import { deriveClients, filterClients, sortClients } from '@/utils/clientUtils'
-import type { ClientSort } from '@/utils/clientUtils'
-import { ClientRow } from './_components/ClientRow'
-import { SegmentedControl } from '@/components/calendar/SegmentedControl'
-import { Input } from '@/components/ui/Input'
-import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
-import { EmptyState } from '@/components/ui/EmptyState'
+import React, { useState, useMemo } from "react";
+import { View, FlatList } from "react-native";
+import { useRouter } from "expo-router";
+import { useAllAppointments } from "@/hooks/useAppointments";
+import { deriveClients, filterClients, sortClients } from "@/utils/clientUtils";
+import type { ClientSort } from "@/utils/clientUtils";
+import { ClientRow } from "./_components/ClientRow";
+import { SegmentedControl } from "@/components/calendar/SegmentedControl";
+import { Input } from "@/components/ui/Input";
+import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
+import { EmptyState } from "@/components/ui/EmptyState";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const SORT_OPTIONS: { label: string; value: ClientSort }[] = [
-  { label: 'Nombre', value: 'name' },
-  { label: 'Gastado', value: 'spent' },
-  { label: 'Reciente', value: 'recent' },
-]
+  { label: "Nombre", value: "name" },
+  { label: "Gastado", value: "spent" },
+  { label: "Reciente", value: "recent" },
+];
 
 export default function ClientesScreen() {
-  const [query, setQuery] = useState('')
-  const [sort, setSort] = useState<ClientSort>('name')
-  const { appointments, isLoading } = useAllAppointments()
-  const router = useRouter()
+  const [query, setQuery] = useState("");
+  const [sort, setSort] = useState<ClientSort>("name");
+  const { appointments, isLoading } = useAllAppointments();
+  const router = useRouter();
 
-  const clients = useMemo(() => deriveClients(appointments), [appointments])
-  const filtered = useMemo(() => filterClients(clients, query), [clients, query])
-  const sorted = useMemo(() => sortClients(filtered, sort), [filtered, sort])
+  const clients = useMemo(() => deriveClients(appointments), [appointments]);
+  const filtered = useMemo(
+    () => filterClients(clients, query),
+    [clients, query],
+  );
+  const sorted = useMemo(() => sortClients(filtered, sort), [filtered, sort]);
 
-  if (isLoading) return <LoadingSpinner fullScreen />
+  if (isLoading) return <LoadingSpinner fullScreen />;
 
   return (
-    <View className="flex-1 bg-neutral-50">
-      <View className="px-4 pt-3 pb-2">
+    <SafeAreaView className="flex-1 bg-neutral-50">
+      <View className="px-4 pb-2">
         <Input
           placeholder="Buscar cliente..."
           value={query}
@@ -48,7 +52,9 @@ export default function ClientesScreen() {
         renderItem={({ item }) => (
           <ClientRow
             client={item}
-            onPress={() => router.push(`/clientes/${encodeURIComponent(item.clientName)}`)}
+            onPress={() =>
+              router.push(`/clientes/${encodeURIComponent(item.clientName)}`)
+            }
           />
         )}
         contentContainerStyle={{ paddingHorizontal: 16, paddingVertical: 8 }}
@@ -56,10 +62,14 @@ export default function ClientesScreen() {
         ListEmptyComponent={
           <EmptyState
             title="Sin clientes"
-            description={query ? 'No hay clientes que coincidan con tu búsqueda.' : 'Aún no hay citas registradas.'}
+            description={
+              query
+                ? "No hay clientes que coincidan con tu búsqueda."
+                : "Aún no hay citas registradas."
+            }
           />
         }
       />
-    </View>
-  )
+    </SafeAreaView>
+  );
 }
