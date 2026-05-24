@@ -5,9 +5,9 @@ import {
   ScrollView,
   Pressable,
   KeyboardAvoidingView,
-  Platform,
   LayoutChangeEvent,
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {
   useForm,
   Controller,
@@ -106,6 +106,7 @@ export function AppointmentForm({
     0,
   );
 
+  const insets = useSafeAreaInsets();
   const scrollViewRef = useRef<ScrollView>(null);
   const yOffsets = useRef<Record<string, number>>({});
   const coordinatesRef = useRef({ lat: 0, lng: 0 });
@@ -161,14 +162,12 @@ export function AppointmentForm({
 
   return (
     <FormProvider {...methods}>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        style={{ flex: 1 }}
-      >
+      <KeyboardAvoidingView behavior="padding" style={{ flex: 1 }}>
         <ScrollView
           ref={scrollViewRef}
           className="flex-1 px-4"
           keyboardShouldPersistTaps="handled"
+          contentContainerStyle={{ paddingBottom: insets.bottom }}
         >
           <View onLayout={storeY("clientName")}>
             <Controller
@@ -350,9 +349,8 @@ export function AppointmentForm({
             onPress={handleSubmit(handleFormSubmit)}
             isLoading={isLoading}
             fullWidth
-            className={`mt-4 ${onFinalize ? "mb-3" : "mb-8"}`}
+            className={onFinalize ? "mt-4 mb-3" : "mt-4 mb-8"}
           />
-
           {onFinalize && (
             <Button
               label="Finalizar servicio"
