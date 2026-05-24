@@ -13,7 +13,8 @@ import { Button } from '@/components/ui/Button'
 import { useAppointments } from '@/hooks/useAppointments'
 import { formatDate, formatTime, formatDuration, toSantiago, computeDeliveryStatus } from '@/utils/dateUtils'
 import { DeliveryStatusBadge } from '@/components/appointments/DeliveryStatusBadge'
-import { formatCLP, formatPhone } from '@/utils/formatUtils'
+import { formatCLP } from '@/utils/formatUtils'
+import { PhoneLink } from '@/components/ui/PhoneLink'
 import { summarizeItems } from '@/constants/services'
 import { remainingBalance } from '@/utils/paymentUtils'
 
@@ -84,9 +85,12 @@ export default function AppointmentDetailScreen() {
             <Text className="text-xl font-bold text-neutral-900">
               {appointment.clientName}
             </Text>
-            <Text className="text-sm text-neutral-500">
-              {appointment.clientPhone ? formatPhone(appointment.clientPhone) : ''}
-            </Text>
+            {appointment.clientPhone && (
+              <PhoneLink
+                phone={appointment.clientPhone}
+                textClassName="text-sm text-neutral-500"
+              />
+            )}
           </View>
           <StatusBadge status={appointment.status} />
         </View>

@@ -2,7 +2,8 @@ import React from 'react'
 import { View, Text, Pressable } from 'react-native'
 import dayjs from 'dayjs'
 import type { DerivedClient } from '@/utils/clientUtils'
-import { formatCLP, formatPhone } from '@/utils/formatUtils'
+import { formatCLP } from '@/utils/formatUtils'
+import { PhoneLink } from '@/components/ui/PhoneLink'
 
 interface ClientRowProps {
   client: DerivedClient
@@ -24,9 +25,10 @@ export function ClientRow({ client, onPress }: ClientRowProps) {
             {client.clientName}
           </Text>
           {client.clientPhone ? (
-            <Text className="text-sm text-neutral-500">
-              {formatPhone(client.clientPhone)}
-            </Text>
+            <PhoneLink
+              phone={client.clientPhone}
+              textClassName="text-sm text-neutral-500"
+            />
           ) : (
             <Text className="text-sm text-neutral-400">Sin teléfono</Text>
           )}

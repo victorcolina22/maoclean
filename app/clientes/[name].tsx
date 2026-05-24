@@ -4,6 +4,7 @@ import { Stack, useLocalSearchParams } from 'expo-router'
 import { useAllAppointments } from '@/hooks/useAppointments'
 import { deriveClients } from '@/utils/clientUtils'
 import { ClientStatsHeader } from './_components/ClientStatsHeader'
+import { PhoneLink } from '@/components/ui/PhoneLink'
 import { AppointmentCard } from '@/components/appointments/AppointmentCard'
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
 import { EmptyState } from '@/components/ui/EmptyState'
@@ -44,6 +45,14 @@ export default function ClientDetailScreen() {
           contentContainerStyle={{ paddingBottom: 32 }}
         >
           <ClientStatsHeader client={client} />
+          {client.clientPhone && (
+            <View className="px-4 pt-3 pb-1">
+              <PhoneLink
+                phone={client.clientPhone}
+                textClassName="text-sm text-primary-600 font-medium"
+              />
+            </View>
+          )}
           <Text className="text-base font-bold text-neutral-900 mt-6 mb-2 px-4">
             Historial ({history.length})
           </Text>
