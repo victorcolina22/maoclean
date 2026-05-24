@@ -35,7 +35,7 @@ export function PhoneLink({ phone, textClassName }: PhoneLinkProps) {
         onPress: () => Linking.openURL(`whatsapp://call?phone=${e164}`),
       },
       { text: 'Cancelar', style: 'cancel' },
-    ])
+    ], { cancelable: true })
   }
 
   return (
