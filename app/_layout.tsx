@@ -1,41 +1,27 @@
 import "../global.css";
 import React, { useEffect } from "react";
-import { Stack, useRouter, useSegments } from "expo-router";
+import { Stack } from "expo-router";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { useAuthStore } from "@/stores/useAuthStore";
-import { onAuthChange } from "@/services/authService";
+import { onAuthChange, autoLogin } from "@/services/authService";
 import { requestNotificationPermission } from "@/services/notificationService";
 
 export default function RootLayout() {
-  const { user, isLoading, setUser, setLoading } = useAuthStore();
-  const router = useRouter();
-  const segments = useSegments();
+  const { setUser, setLoading } = useAuthStore();
 
   useEffect(() => {
     const unsubscribe = onAuthChange((firebaseUser) => {
       setUser(firebaseUser);
       setLoading(false);
     });
+    autoLogin();
     requestNotificationPermission();
     return unsubscribe;
   }, []);
 
-  useEffect(() => {
-    if (isLoading) return;
-
-    const inAuthGroup = segments[0] === "(auth)";
-
-    if (!user && !inAuthGroup) {
-      router.replace("/(auth)/login");
-    } else if (user && inAuthGroup) {
-      router.replace("/(tabs)");
-    }
-  }, [user, isLoading, segments]);
-
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <Stack screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="(auth)" />
         <Stack.Screen name="(tabs)" />
         <Stack.Screen
           name="appointment"
