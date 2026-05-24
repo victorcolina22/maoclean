@@ -8,7 +8,15 @@ import {
   Platform,
   LayoutChangeEvent,
 } from "react-native";
-import { useForm, Controller, useFieldArray, useWatch, Control, FieldErrors, FormProvider } from "react-hook-form";
+import {
+  useForm,
+  Controller,
+  useFieldArray,
+  useWatch,
+  Control,
+  FieldErrors,
+  FormProvider,
+} from "react-hook-form";
 import { Timestamp, GeoPoint } from "firebase/firestore";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
@@ -93,7 +101,8 @@ export function AppointmentForm({
 
   const watchedItems = useWatch({ control, name: "items" });
   const computedTotal = (watchedItems ?? []).reduce(
-    (sum, it) => sum + (parseInt(it?.qty, 10) || 0) * (parseInt(it?.unitPrice, 10) || 0),
+    (sum, it) =>
+      sum + (parseInt(it?.qty, 10) || 0) * (parseInt(it?.unitPrice, 10) || 0),
     0,
   );
 
@@ -128,7 +137,10 @@ export function AppointmentForm({
       items,
       location: {
         address: values.address,
-        coordinates: new GeoPoint(coordinatesRef.current.lat, coordinatesRef.current.lng),
+        coordinates: new GeoPoint(
+          coordinatesRef.current.lat,
+          coordinatesRef.current.lng,
+        ),
         commune: values.commune,
       },
       scheduledAt: Timestamp.fromDate(
@@ -194,7 +206,9 @@ export function AppointmentForm({
           </View>
 
           <View onLayout={storeY("items")} className="mb-2">
-            <Text className="text-sm font-medium text-neutral-700 mb-2">Servicios</Text>
+            <Text className="text-sm font-medium text-neutral-700 mb-2">
+              Servicios
+            </Text>
             {fields.map((field, index) => (
               <ItemWatcher
                 key={field.id}
@@ -211,14 +225,22 @@ export function AppointmentForm({
               </Text>
             )}
             <Pressable
-              onPress={() => append({ type: "casa", label: "Casa", qty: "1", unitPrice: "" })}
+              onPress={() =>
+                append({ type: "casa", label: "Casa", qty: "1", unitPrice: "" })
+              }
               className="self-start px-3 py-2 rounded-xl border border-primary-600 mb-2"
             >
-              <Text className="text-primary-600 text-sm font-medium">+ Agregar servicio</Text>
+              <Text className="text-primary-600 text-sm font-medium">
+                + Agregar servicio
+              </Text>
             </Pressable>
             <View className="flex-row justify-between items-center bg-neutral-50 rounded-xl px-3 py-2 mb-2">
-              <Text className="text-sm font-medium text-neutral-600">Total</Text>
-              <Text className="text-base font-bold text-neutral-900">{formatCLP(computedTotal)}</Text>
+              <Text className="text-sm font-medium text-neutral-600">
+                Total
+              </Text>
+              <Text className="text-base font-bold text-neutral-900">
+                {formatCLP(computedTotal)}
+              </Text>
             </View>
           </View>
 
@@ -249,7 +271,8 @@ export function AppointmentForm({
             name="scheduledAt"
             rules={{
               required: "Selecciona fecha y hora",
-              validate: (v) => parseScheduledAt(v).isValid() || "Fecha inválida",
+              validate: (v) =>
+                parseScheduledAt(v).isValid() || "Fecha inválida",
             }}
             render={({ field: { onChange, value } }) => (
               <DateTimePickerField
@@ -266,19 +289,19 @@ export function AppointmentForm({
             name="deliveryDate"
             rules={{
               validate: (v) => {
-                if (!v) return true
-                const scheduled = getValues('scheduledAt')
-                if (!scheduled) return true
+                if (!v) return true;
+                const scheduled = getValues("scheduledAt");
+                if (!scheduled) return true;
                 return (
                   parseScheduledAt(v).isAfter(parseScheduledAt(scheduled)) ||
-                  'La fecha de entrega debe ser posterior a la fecha de la cita'
-                )
+                  "La fecha de entrega debe ser posterior a la fecha de la cita"
+                );
               },
             }}
             render={({ field: { onChange, value } }) => (
               <DateTimePickerField
                 label="Fecha de entrega (opcional)"
-                value={value ?? ''}
+                value={value ?? ""}
                 onChange={onChange}
                 error={errors.deliveryDate?.message}
               />
@@ -354,13 +377,16 @@ function ItemWatcher({
   onRemove,
   isOnly,
 }: {
-  index: number
-  control: Control<any>
-  errors: FieldErrors<any>
-  onRemove: () => void
-  isOnly: boolean
+  index: number;
+  control: Control<any>;
+  errors: FieldErrors<any>;
+  onRemove: () => void;
+  isOnly: boolean;
 }) {
-  const watchType = useWatch({ control, name: `items.${index}.type` }) as ServiceType
+  const watchType = useWatch({
+    control,
+    name: `items.${index}.type`,
+  }) as ServiceType;
   return (
     <ItemRow
       index={index}
@@ -370,5 +396,5 @@ function ItemWatcher({
       isOnly={isOnly}
       watchType={watchType}
     />
-  )
+  );
 }

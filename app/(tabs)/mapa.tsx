@@ -76,7 +76,7 @@ export default function MapaScreen() {
         />
       </View>
 
-      <View className="px-5 mt-5">
+      <View className="px-5 mt-5 flex-1">
         <View className="z-10">
           <Text className="text-base font-semibold text-neutral-900 bg-white rounded-xl px-4 py-2 shadow-sm border border-neutral-100">
             🗺️ {withCoords.length} citas en el mapa
@@ -96,7 +96,7 @@ export default function MapaScreen() {
 
         {communeGroups.length > 0 && (
           <View
-            className="absolute left-0 right-0 bg-white border-t border-neutral-100"
+            className="bg-white border-t border-neutral-100 rounded-xl mt-8"
             style={{ bottom: insets.bottom, zIndex: 10 }}
           >
             <ScrollView

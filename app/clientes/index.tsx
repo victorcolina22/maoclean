@@ -18,7 +18,7 @@ const SORT_OPTIONS: { label: string; value: ClientSort }[] = [
 
 export default function ClientesScreen() {
   const [query, setQuery] = useState("");
-  const [sort, setSort] = useState<ClientSort>("name");
+  const [sort, setSort] = useState<ClientSort>("recent");
   const { appointments, isLoading } = useAllAppointments();
   const router = useRouter();
 
