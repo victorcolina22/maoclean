@@ -1,11 +1,11 @@
 import React from 'react'
 import { Tabs } from 'expo-router'
-import { View, Text } from 'react-native'
+import { View } from 'react-native'
+import { Ionicons } from '@expo/vector-icons'
 import NavigationDrawer from '@/components/ui/NavigationDrawer'
 
-function TabIcon({ emoji, focused }: { emoji: string; focused: boolean }) {
-  return <Text style={{ fontSize: 20, opacity: focused ? 1 : 0.5 }}>{emoji}</Text>
-}
+const ACTIVE_COLOR = '#2563EB'
+const INACTIVE_COLOR = '#9CA3AF'
 
 export default function TabsLayout() {
   return (
@@ -13,8 +13,8 @@ export default function TabsLayout() {
       <Tabs
         screenOptions={{
           headerShown: false,
-          tabBarActiveTintColor: '#2563EB',
-          tabBarInactiveTintColor: '#9CA3AF',
+          tabBarActiveTintColor: ACTIVE_COLOR,
+          tabBarInactiveTintColor: INACTIVE_COLOR,
           tabBarStyle: {
             backgroundColor: '#FFFFFF',
             borderTopColor: '#E5E7EB',
@@ -30,21 +30,27 @@ export default function TabsLayout() {
           name="index"
           options={{
             title: 'Hoy',
-            tabBarIcon: ({ focused }) => <TabIcon emoji="🏠" focused={focused} />,
+            tabBarIcon: ({ focused }) => (
+              <Ionicons name={focused ? 'home' : 'home-outline'} size={24} color={focused ? ACTIVE_COLOR : INACTIVE_COLOR} />
+            ),
           }}
         />
         <Tabs.Screen
           name="citas"
           options={{
             title: 'Citas',
-            tabBarIcon: ({ focused }) => <TabIcon emoji="📅" focused={focused} />,
+            tabBarIcon: ({ focused }) => (
+              <Ionicons name={focused ? 'calendar' : 'calendar-outline'} size={24} color={focused ? ACTIVE_COLOR : INACTIVE_COLOR} />
+            ),
           }}
         />
         <Tabs.Screen
           name="mapa"
           options={{
             title: 'Mapa',
-            tabBarIcon: ({ focused }) => <TabIcon emoji="🗺️" focused={focused} />,
+            tabBarIcon: ({ focused }) => (
+              <Ionicons name={focused ? 'map' : 'map-outline'} size={24} color={focused ? ACTIVE_COLOR : INACTIVE_COLOR} />
+            ),
           }}
         />
       </Tabs>

@@ -1,5 +1,6 @@
 import React from "react";
 import { View, Text, FlatList, Pressable } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useAppointments, useAllAppointments } from "@/hooks/useAppointments";
 import { StatTile } from "@/components/home/StatTile";
@@ -22,14 +23,14 @@ export default function HomeScreen() {
   const TILE_DEFS: Array<{
     slug: FilterSlug
     label: string
-    icon: string
+    icon: React.ReactNode
     bgClass: string
     borderClass: string
   }> = [
-    { slug: 'pagos-pendientes', label: 'Pagos pendientes', icon: '💳', bgClass: 'bg-amber-50', borderClass: 'border-l-amber-500' },
-    { slug: 'esta-semana',      label: 'Esta semana',      icon: '📅', bgClass: 'bg-blue-50',  borderClass: 'border-l-primary-600' },
-    { slug: 'en-proceso',       label: 'En proceso',       icon: '🔄', bgClass: 'bg-orange-50', borderClass: 'border-l-orange-500' },
-    { slug: 'completadas',      label: 'Completadas',      icon: '✅', bgClass: 'bg-green-50',  borderClass: 'border-l-green-600' },
+    { slug: 'pagos-pendientes', label: 'Pagos pendientes', icon: <Ionicons name="card-outline" size={22} color="#f59e0b" />, bgClass: 'bg-amber-50', borderClass: 'border-l-amber-500' },
+    { slug: 'esta-semana',      label: 'Esta semana',      icon: <Ionicons name="calendar-outline" size={22} color="#2563eb" />, bgClass: 'bg-blue-50',  borderClass: 'border-l-primary-600' },
+    { slug: 'en-proceso',       label: 'En proceso',       icon: <Ionicons name="time-outline" size={22} color="#f97316" />, bgClass: 'bg-orange-50', borderClass: 'border-l-orange-500' },
+    { slug: 'completadas',      label: 'Completadas',      icon: <Ionicons name="checkmark-circle-outline" size={22} color="#16a34a" />, bgClass: 'bg-green-50',  borderClass: 'border-l-green-600' },
   ]
 
   const tileCounts = TILE_DEFS.map((def) => ({

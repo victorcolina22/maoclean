@@ -1,5 +1,6 @@
 import React from 'react'
 import { View, Text, Pressable } from 'react-native'
+import { Ionicons } from '@expo/vector-icons'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useDrawerStore } from '@/stores/useDrawerStore'
 
@@ -30,7 +31,7 @@ export default function AppBar({
     >
       {leftSlot ? leftSlot : showHamburger && (
         <Pressable onPress={toggleDrawer} className="mr-3 p-1">
-          <Text className="text-neutral-700 text-xl">☰</Text>
+          <Ionicons name="menu" size={24} color="#374151" />
         </Pressable>
       )}
       <View className="flex-1">
