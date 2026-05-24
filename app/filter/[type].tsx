@@ -1,17 +1,20 @@
-import React, { useMemo } from 'react'
-import { View, FlatList, Pressable, Text } from 'react-native'
-import { useLocalSearchParams, useRouter } from 'expo-router'
-import { useAllAppointments } from '@/hooks/useAppointments'
-import { APPOINTMENT_FILTERS, isFilterSlug } from '@/constants/appointment-filters'
-import { AppointmentCard } from '@/components/appointments/AppointmentCard'
-import AppBar from '@/components/ui/AppBar'
-import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
-import { EmptyState } from '@/components/ui/EmptyState'
+import React, { useMemo } from "react";
+import { View, FlatList, Pressable, Text } from "react-native";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import { useAllAppointments } from "@/hooks/useAppointments";
+import {
+  APPOINTMENT_FILTERS,
+  isFilterSlug,
+} from "@/constants/appointment-filters";
+import { AppointmentCard } from "@/components/appointments/AppointmentCard";
+import AppBar from "@/components/ui/AppBar";
+import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
+import { EmptyState } from "@/components/ui/EmptyState";
 
 export default function FilterScreen() {
-  const router = useRouter()
-  const { type } = useLocalSearchParams<{ type: string }>()
-  const { appointments, isLoading } = useAllAppointments()
+  const router = useRouter();
+  const { type } = useLocalSearchParams<{ type: string }>();
+  const { appointments, isLoading } = useAllAppointments();
 
   if (!isFilterSlug(type)) {
     return (
@@ -25,12 +28,15 @@ export default function FilterScreen() {
             </Pressable>
           }
         />
-        <EmptyState title="Filtro no válido" description="El tipo de filtro no existe." />
+        <EmptyState
+          title="Filtro no válido"
+          description="El tipo de filtro no existe."
+        />
       </View>
-    )
+    );
   }
 
-  const filter = APPOINTMENT_FILTERS[type]
+  const filter = APPOINTMENT_FILTERS[type];
 
   const filtered = useMemo(
     () =>
@@ -38,7 +44,7 @@ export default function FilterScreen() {
         .filter(filter.predicate)
         .sort((a, b) => b.scheduledAt.seconds - a.scheduledAt.seconds),
     [appointments, filter],
-  )
+  );
 
   return (
     <View className="flex-1 bg-neutral-50">
@@ -73,5 +79,5 @@ export default function FilterScreen() {
         />
       )}
     </View>
-  )
+  );
 }

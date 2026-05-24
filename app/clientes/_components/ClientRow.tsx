@@ -1,17 +1,17 @@
-import React from 'react'
-import { View, Text, Pressable } from 'react-native'
-import dayjs from 'dayjs'
-import type { DerivedClient } from '@/utils/clientUtils'
-import { formatCLP } from '@/utils/formatUtils'
-import { PhoneLink } from '@/components/ui/PhoneLink'
+import React from "react";
+import { View, Text, Pressable } from "react-native";
+import dayjs from "dayjs";
+import type { DerivedClient } from "@/utils/clientUtils";
+import { formatCLP } from "@/utils/formatUtils";
+import { PhoneLink } from "@/components/ui/PhoneLink";
 
 interface ClientRowProps {
-  client: DerivedClient
-  onPress: () => void
+  client: DerivedClient;
+  onPress: () => void;
 }
 
 export function ClientRow({ client, onPress }: ClientRowProps) {
-  const lastVisitDate = dayjs(client.lastVisitAt.toDate()).format('D MMM YYYY')
+  const lastVisitDate = dayjs(client.lastVisitAt.toDate()).format("D MMM YYYY");
 
   return (
     <Pressable
@@ -21,14 +21,19 @@ export function ClientRow({ client, onPress }: ClientRowProps) {
       {/* Top row */}
       <View className="flex-row justify-between items-start mb-1">
         <View className="flex-1 mr-3">
-          <Text className="text-base font-semibold text-neutral-900" numberOfLines={1}>
+          <Text
+            className="text-base font-semibold text-neutral-900"
+            numberOfLines={1}
+          >
             {client.clientName}
           </Text>
           {client.clientPhone ? (
-            <PhoneLink
-              phone={client.clientPhone}
-              textClassName="text-sm text-neutral-500"
-            />
+            <View className="self-start">
+              <PhoneLink
+                phone={client.clientPhone}
+                textClassName="text-sm text-neutral-500"
+              />
+            </View>
           ) : (
             <Text className="text-sm text-neutral-400">Sin teléfono</Text>
           )}
@@ -38,7 +43,8 @@ export function ClientRow({ client, onPress }: ClientRowProps) {
             {formatCLP(client.totalSpent)}
           </Text>
           <Text className="text-xs text-neutral-400">
-            {client.appointmentCount} {client.appointmentCount === 1 ? 'cita' : 'citas'}
+            {client.appointmentCount}{" "}
+            {client.appointmentCount === 1 ? "cita" : "citas"}
           </Text>
         </View>
       </View>
@@ -57,5 +63,5 @@ export function ClientRow({ client, onPress }: ClientRowProps) {
         )}
       </View>
     </Pressable>
-  )
+  );
 }
