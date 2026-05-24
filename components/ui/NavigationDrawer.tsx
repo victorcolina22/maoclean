@@ -18,13 +18,16 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useDrawerStore } from "@/stores/useDrawerStore";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { logout } from "@/services/authService";
+import { Ionicons } from "@expo/vector-icons";
 
-const NAV_ITEMS = [
-  { emoji: "👥", label: "Clientes", route: "/clientes" },
-  { emoji: "📊", label: "Métricas", route: "/metricas" },
-  { emoji: "🔔", label: "Notificaciones", route: "/notificaciones" },
-  { emoji: "⚙️", label: "Ajustes", route: "/ajustes" },
-] as const;
+type IoniconsName = React.ComponentProps<typeof Ionicons>["name"];
+
+const NAV_ITEMS: Array<{ icon: IoniconsName; label: string; route: string }> = [
+  { icon: "people-outline", label: "Clientes", route: "/clientes" },
+  { icon: "bar-chart-outline", label: "Métricas", route: "/metricas" },
+  { icon: "notifications-outline", label: "Notificaciones", route: "/notificaciones" },
+  { icon: "settings-outline", label: "Ajustes", route: "/ajustes" },
+];
 
 export default function NavigationDrawer() {
   const { width } = useWindowDimensions();
@@ -112,7 +115,7 @@ export default function NavigationDrawer() {
               onPress={() => handleNavItem(item.route)}
               className="flex-row items-center gap-3 px-4 py-3"
             >
-              <Text className="text-xl">{item.emoji}</Text>
+              <Ionicons name={item.icon} size={22} color="#374151" />
               <Text className="text-base font-medium text-neutral-800">
                 {item.label}
               </Text>
@@ -129,6 +132,7 @@ export default function NavigationDrawer() {
             onPress={handleLogout}
             className="flex-row items-center gap-3"
           >
+            <Ionicons name="log-out-outline" size={22} color="#dc2626" />
             <Text className="text-base font-medium text-red-600">
               Cerrar sesión
             </Text>
