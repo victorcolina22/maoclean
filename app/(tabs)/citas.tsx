@@ -17,6 +17,7 @@ import { MonthGrid } from "@/components/calendar/MonthGrid";
 import { WeekTimeline } from "@/components/calendar/WeekTimeline";
 import { useCalendarGrouping } from "@/hooks/useCalendarGrouping";
 import { useAppointmentsStore } from "@/stores/useAppointmentsStore";
+import Entypo from "@expo/vector-icons/Entypo";
 
 const STATUS_FILTERS: { label: string; value: AppointmentStatus | "all" }[] = [
   { label: "Todas", value: "all" },
@@ -29,7 +30,9 @@ const STATUS_FILTERS: { label: string; value: AppointmentStatus | "all" }[] = [
 export default function CitasScreen() {
   const router = useRouter();
   const { appointments, isLoading } = useAllAppointments();
-  const [statusFilter, setStatusFilter] = useState<AppointmentStatus | "all">("all");
+  const [statusFilter, setStatusFilter] = useState<AppointmentStatus | "all">(
+    "all",
+  );
   const [communeFilter, setCommuneFilter] = useState<string | null>(null);
   const [view, setView] = useState<CalendarView>("list");
   const [displayedMonth, setDisplayedMonth] = useState(() => dayjs());
@@ -43,12 +46,19 @@ export default function CitasScreen() {
     setView("week");
   };
 
-  const communeGroups = useMemo(() => groupByCommune(appointments), [appointments]);
+  const communeGroups = useMemo(
+    () => groupByCommune(appointments),
+    [appointments],
+  );
 
   const filtered = useMemo(() => {
     let result = appointments;
-    if (statusFilter !== "all") result = result.filter((a) => a.status === statusFilter);
-    if (communeFilter) result = result.filter((a) => a.location?.commune?.trim() === communeFilter);
+    if (statusFilter !== "all")
+      result = result.filter((a) => a.status === statusFilter);
+    if (communeFilter)
+      result = result.filter(
+        (a) => a.location?.commune?.trim() === communeFilter,
+      );
     return result.sort((a, b) => b.scheduledAt.seconds - a.scheduledAt.seconds);
   }, [appointments, statusFilter, communeFilter]);
 
@@ -77,9 +87,9 @@ export default function CitasScreen() {
       <SegmentedControl<CalendarView>
         value={view}
         options={[
-          { label: "Mes",    value: "month" },
-          { label: "Semana", value: "week"  },
-          { label: "Lista",  value: "list"  },
+          { label: "Mes", value: "month" },
+          { label: "Semana", value: "week" },
+          { label: "Lista", value: "list" },
         ]}
         onChange={setView}
       />
@@ -103,7 +113,11 @@ export default function CitasScreen() {
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
-            contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 8, gap: 8 }}
+            contentContainerStyle={{
+              paddingHorizontal: 16,
+              paddingBottom: 8,
+              gap: 8,
+            }}
             className="max-h-12"
           >
             {STATUS_FILTERS.map((f) => (
@@ -145,7 +159,9 @@ export default function CitasScreen() {
                     onPress={() => setCommuneFilter(null)}
                     className="flex-row items-center gap-1 px-3 py-1.5 rounded-full bg-primary-600 border border-primary-600"
                   >
-                    <Text className="text-white text-xs font-medium">✕ Todas las zonas</Text>
+                    <Text className="text-white text-xs font-medium">
+                      ✕ Todas las zonas
+                    </Text>
                   </Pressable>
                 )}
                 {communeChips.map(([commune, group]) => {
@@ -160,11 +176,26 @@ export default function CitasScreen() {
                           : "bg-white border-neutral-200"
                       }`}
                     >
-                      <Text className={active ? "text-white text-xs font-medium" : "text-neutral-700 text-xs font-medium"}>
-                        📍 {commune}
+                      <Text
+                        className={
+                          active
+                            ? "text-white text-xs font-medium"
+                            : "text-neutral-700 text-xs font-medium"
+                        }
+                      >
+                        <Entypo name="location-pin" size={12} color="black" />
+                        {commune}
                       </Text>
-                      <View className={`rounded-full px-1.5 ${active ? "bg-white/30" : "bg-neutral-100"}`}>
-                        <Text className={active ? "text-white text-xs font-bold" : "text-neutral-600 text-xs font-bold"}>
+                      <View
+                        className={`rounded-full px-1.5 ${active ? "bg-white/30" : "bg-neutral-100"}`}
+                      >
+                        <Text
+                          className={
+                            active
+                              ? "text-white text-xs font-bold"
+                              : "text-neutral-600 text-xs font-bold"
+                          }
+                        >
                           {group.length}
                         </Text>
                       </View>

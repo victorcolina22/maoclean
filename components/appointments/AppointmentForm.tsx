@@ -21,6 +21,7 @@ import { Timestamp, GeoPoint } from "firebase/firestore";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { DateTimePickerField } from "@/components/ui/DateTimePickerField";
+import { DurationPickerField } from "@/components/ui/DurationPickerField";
 import { AddressAutocomplete } from "@/components/ui/AddressAutocomplete";
 import {
   CreateAppointmentDTO,
@@ -311,15 +312,12 @@ export function AppointmentForm({
             <Controller
               control={control}
               name="estimatedDuration"
-              rules={{ required: "Ingresa la duración" }}
+              rules={{ required: "Selecciona la duración" }}
               render={({ field: { onChange, value } }) => (
-                <Input
-                  label="Duración (minutos)"
-                  placeholder="60"
+                <DurationPickerField
+                  label="Duración"
                   value={value}
-                  onChangeText={onChange}
-                  onFocus={() => scrollTo("estimatedDuration")}
-                  keyboardType="numeric"
+                  onChange={onChange}
                   error={errors.estimatedDuration?.message}
                 />
               )}
