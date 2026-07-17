@@ -36,7 +36,6 @@ export default function NewAppointmentScreen() {
       });
       router.back();
     } else {
-      console.log(result);
       setToast({ visible: true, message: result.error, type: "error" });
     }
   };

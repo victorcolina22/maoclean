@@ -19,18 +19,8 @@ const app = isNewApp ? initializeApp(firebaseConfig) : getApps()[0]
 // multi-account role model (each device stays logged in as its own
 // owner/employee account across restarts, instead of everyone sharing one
 // auto-logged-in admin session).
-// TODO(cleanup): temporary diagnostic try/catch — remove once persistence
-// is confirmed working across a real app restart.
-let persistedAuth
-try {
-  persistedAuth = isNewApp
-    ? initializeAuth(app, { persistence: getReactNativePersistence(AsyncStorage) })
-    : getAuth(app)
-  console.log('[firebase] initializeAuth with getReactNativePersistence succeeded, isNewApp=', isNewApp)
-} catch (e) {
-  console.error('[firebase] initializeAuth with getReactNativePersistence THREW:', e)
-  persistedAuth = getAuth(app)
-}
-export const auth = persistedAuth
+export const auth = isNewApp
+  ? initializeAuth(app, { persistence: getReactNativePersistence(AsyncStorage) })
+  : getAuth(app)
 
 export const db = getFirestore(app)

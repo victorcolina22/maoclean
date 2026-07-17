@@ -3,7 +3,6 @@ import React, { useEffect } from "react";
 import { Stack } from "expo-router";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { useRoleStore } from "@/stores/useRoleStore";
 import { onAuthChange } from "@/services/authService";
@@ -21,15 +20,7 @@ export default function RootLayout() {
   const { setClaims, clear: clearRole } = useRoleStore();
 
   useEffect(() => {
-    // TODO(cleanup): temporary diagnostic — remove once persistence is confirmed working.
-    AsyncStorage.getAllKeys().then((keys) => {
-      const authKeys = keys.filter((k) => k.toLowerCase().includes("firebase") || k.toLowerCase().includes("authuser"));
-      console.log("[_layout] AsyncStorage keys on boot:", keys);
-      console.log("[_layout] firebase/auth-related keys:", authKeys);
-    });
-
     const unsubscribe = onAuthChange((firebaseUser) => {
-      console.log("[_layout] onAuthChange fired, firebaseUser =", firebaseUser?.uid ?? null);
       setUser(firebaseUser);
       setLoading(false);
 
@@ -45,8 +36,6 @@ export default function RootLayout() {
         .then(async (tokenResult) => {
           const role = tokenResult.claims.role as Role | undefined;
           const ownerId = tokenResult.claims.ownerId as string | undefined;
-          // TODO(cleanup): temporary diagnostic while rolling out roles — remove once confirmed working.
-          console.log("[_layout] claims from token:", tokenResult.claims);
           setClaims({ role, ownerId });
           if (role === "admin" && ownerId) {
             await migrateOwnerAndPricingOnce(ownerId);
