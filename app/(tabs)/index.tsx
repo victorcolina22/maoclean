@@ -35,10 +35,14 @@ export default function HomeScreen() {
     { slug: 'completadas',      label: 'Completadas',      icon: <Ionicons name="checkmark-circle-outline" size={22} color="#16a34a" />, bgClass: 'bg-green-50',  borderClass: 'border-l-green-600' },
   ]
 
-  const tileCounts = TILE_DEFS.map((def) => ({
-    ...def,
-    count: allAppointments.filter(APPOINTMENT_FILTERS[def.slug].predicate).length,
-  }))
+  const HIDDEN_FOR_VIEWER: FilterSlug[] = ['pagos-pendientes', 'en-proceso']
+
+  const tileCounts = TILE_DEFS
+    .filter((def) => isAdmin || !HIDDEN_FOR_VIEWER.includes(def.slug))
+    .map((def) => ({
+      ...def,
+      count: allAppointments.filter(APPOINTMENT_FILTERS[def.slug].predicate).length,
+    }))
 
   const sorted = [...appointments].sort(
     (a, b) => a.scheduledAt.seconds - b.scheduledAt.seconds,

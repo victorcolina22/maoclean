@@ -9,6 +9,7 @@ import { SegmentedControl } from "@/components/calendar/SegmentedControl";
 import { Input } from "@/components/ui/Input";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { useIsAdmin } from "@/stores/useRoleStore";
 
 const SORT_OPTIONS: { label: string; value: ClientSort }[] = [
   { label: "Nombre", value: "name" },
@@ -17,6 +18,10 @@ const SORT_OPTIONS: { label: string; value: ClientSort }[] = [
 ];
 
 export default function ClientesScreen() {
+  const isAdmin = useIsAdmin();
+  const sortOptions = isAdmin
+    ? SORT_OPTIONS
+    : SORT_OPTIONS.filter((o) => o.value !== "spent");
   const [query, setQuery] = useState("");
   const [sort, setSort] = useState<ClientSort>("recent");
   const { appointments, isLoading } = useAllAppointments();
@@ -42,7 +47,7 @@ export default function ClientesScreen() {
       </View>
       <SegmentedControl
         value={sort}
-        options={SORT_OPTIONS}
+        options={sortOptions}
         onChange={setSort}
       />
       <FlatList
