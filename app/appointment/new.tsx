@@ -5,9 +5,12 @@ import { AppointmentForm } from "@/components/appointments/AppointmentForm";
 import { Toast } from "@/components/ui/Toast";
 import { useAppointments } from "@/hooks/useAppointments";
 import { CreateAppointmentDTO } from "@/domain/entities/appointment";
+import { useIsAdmin } from "@/stores/useRoleStore";
+import { NotAuthorized } from "@/components/ui/NotAuthorized";
 
 export default function NewAppointmentScreen() {
   const router = useRouter();
+  const isAdmin = useIsAdmin();
   const { create } = useAppointments();
   const [isLoading, setIsLoading] = useState(false);
   const [toast, setToast] = useState<{
@@ -20,7 +23,7 @@ export default function NewAppointmentScreen() {
     type: "success",
   });
 
-  const handleSubmit = async (data: Omit<CreateAppointmentDTO, "userId">) => {
+  const handleSubmit = async (data: Omit<CreateAppointmentDTO, "userId" | "ownerId">) => {
     setIsLoading(true);
     const result = await create(data);
     setIsLoading(false);
@@ -37,6 +40,8 @@ export default function NewAppointmentScreen() {
       setToast({ visible: true, message: result.error, type: "error" });
     }
   };
+
+  if (!isAdmin) return <NotAuthorized />;
 
   return (
     <View className="flex-1 bg-neutral-50 pt-4">

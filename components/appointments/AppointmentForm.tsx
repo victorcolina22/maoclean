@@ -59,7 +59,7 @@ interface FormValues {
 
 interface AppointmentFormProps {
   defaultValues?: Partial<FormValues>;
-  onSubmit: (data: Omit<CreateAppointmentDTO, "userId">) => Promise<void>;
+  onSubmit: (data: Omit<CreateAppointmentDTO, "userId" | "ownerId">) => Promise<void>;
   isLoading?: boolean;
   submitLabel?: string;
   onFinalize?: () => void;
@@ -133,7 +133,7 @@ export function AppointmentForm({
       unitPrice: parseInt(it.unitPrice, 10),
     }));
 
-    const dto: Omit<CreateAppointmentDTO, "userId"> = {
+    const dto: Omit<CreateAppointmentDTO, "userId" | "ownerId"> = {
       clientName: values.clientName,
       clientPhone: values.clientPhone || undefined,
       items,

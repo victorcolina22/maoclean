@@ -13,9 +13,11 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { Button } from "@/components/ui/Button";
 import { formatDate } from "@/utils/dateUtils";
 import AppBar from "@/components/ui/AppBar";
+import { useIsAdmin } from "@/stores/useRoleStore";
 
 export default function HomeScreen() {
   const router = useRouter();
+  const isAdmin = useIsAdmin();
   const { appointments, isLoading } = useAppointments();
   const { appointments: allAppointments } = useAllAppointments();
   const today = new Date();
@@ -48,12 +50,14 @@ export default function HomeScreen() {
         title="Hoy"
         subtitle={formatDate(today)}
         rightSlot={
-          <Pressable
-            onPress={() => router.push("/appointment/new")}
-            className="bg-primary-600 rounded-xl px-4 py-2"
-          >
-            <Text className="text-white font-semibold">+ Cita</Text>
-          </Pressable>
+          isAdmin ? (
+            <Pressable
+              onPress={() => router.push("/appointment/new")}
+              className="bg-primary-600 rounded-xl px-4 py-2"
+            >
+              <Text className="text-white font-semibold">+ Cita</Text>
+            </Pressable>
+          ) : undefined
         }
       />
 
@@ -92,10 +96,12 @@ export default function HomeScreen() {
               title="Sin citas hoy"
               description="Agrega tu primera cita del día."
               action={
-                <Button
-                  label="Nueva cita"
-                  onPress={() => router.push("/appointment/new")}
-                />
+                isAdmin ? (
+                  <Button
+                    label="Nueva cita"
+                    onPress={() => router.push("/appointment/new")}
+                  />
+                ) : undefined
               }
             />
           }

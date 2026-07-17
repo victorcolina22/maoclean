@@ -7,6 +7,8 @@ import { SegmentedControl } from "@/components/calendar/SegmentedControl";
 import { MetricCard } from "./_components/MetricCard";
 import { MetricSection } from "./_components/MetricSection";
 import { TopClientsList } from "./_components/TopClientsList";
+import { useIsAdmin } from "@/stores/useRoleStore";
+import { NotAuthorized } from "@/components/ui/NotAuthorized";
 
 const PERIOD_OPTIONS: { label: string; value: MetricsPeriod }[] = [
   { label: "Semana", value: "week" },
@@ -15,8 +17,11 @@ const PERIOD_OPTIONS: { label: string; value: MetricsPeriod }[] = [
 ];
 
 export default function MetricasScreen() {
+  const isAdmin = useIsAdmin();
   const [period, setPeriod] = useState<MetricsPeriod>("month");
   const { appointments, isLoading } = useAllAppointments();
+
+  if (!isAdmin) return <NotAuthorized />;
 
   const metrics = useMemo(
     () => computeMetrics(appointments, period),

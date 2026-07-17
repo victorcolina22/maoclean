@@ -2,6 +2,7 @@ import React from 'react'
 import { View, Text } from 'react-native'
 import type { DerivedClient } from '@/utils/clientUtils'
 import { formatCLP } from '@/utils/formatUtils'
+import { useIsAdmin } from '@/stores/useRoleStore'
 
 interface ClientStatsHeaderProps {
   client: DerivedClient
@@ -35,18 +36,23 @@ function KpiTile({ label, value, color }: KpiTileProps) {
 }
 
 export function ClientStatsHeader({ client }: ClientStatsHeaderProps) {
+  const isAdmin = useIsAdmin()
   return (
     <View className="flex-row gap-3 px-4 pt-4 pb-2">
-      <KpiTile
-        label="Total gastado"
-        value={formatCLP(client.totalSpent)}
-        color="green"
-      />
-      <KpiTile
-        label="Por cobrar"
-        value={formatCLP(client.pendingBalance)}
-        color="amber"
-      />
+      {isAdmin && (
+        <>
+          <KpiTile
+            label="Total gastado"
+            value={formatCLP(client.totalSpent)}
+            color="green"
+          />
+          <KpiTile
+            label="Por cobrar"
+            value={formatCLP(client.pendingBalance)}
+            color="amber"
+          />
+        </>
+      )}
       <KpiTile
         label="Citas"
         value={String(client.appointmentCount)}

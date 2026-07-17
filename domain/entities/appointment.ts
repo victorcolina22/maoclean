@@ -36,24 +36,32 @@ export interface ServiceItem {
   type: ServiceType
   label: string
   qty: number
-  unitPrice: number
+  // Absent when the reader (viewer role) has no access to pricing data —
+  // see services/pricingRepository.ts. Present for admin reads.
+  unitPrice?: number
 }
 
 export interface Appointment {
   id: string
+  ownerId: string
   userId: string
   clientName: string
   clientPhone?: string
   items: ServiceItem[]
   location: AppointmentLocation
   scheduledAt: Timestamp
-  amountPaid: number
-  paymentHistory: PaymentEntry[]
+  // The fields below live in a separate admin-only Firestore document
+  // (orgs/{ownerId}/private/pricing) and are merged in by the repository
+  // ONLY when the reader can access it. They're genuinely absent (not just
+  // hidden in the UI) for a viewer-role reader — Firestore's security rules
+  // deny that read outright.
+  amountPaid?: number
+  paymentHistory?: PaymentEntry[]
+  // Computed: sum of items[].qty * items[].unitPrice. Not stored in Firestore.
+  price?: number
+  paymentStatus?: PaymentStatus
   deliveryDate?: Timestamp
   estimatedDuration: number
-  // Computed: sum of items[].qty * items[].unitPrice. Not stored in Firestore.
-  price: number
-  paymentStatus: PaymentStatus
   status: AppointmentStatus
   notes?: string
   createdAt: Timestamp
@@ -61,6 +69,7 @@ export interface Appointment {
 }
 
 export interface CreateAppointmentDTO {
+  ownerId: string
   userId: string
   clientName: string
   clientPhone?: string

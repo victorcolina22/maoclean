@@ -12,10 +12,13 @@ import {
   PaymentStatus,
 } from "@/domain/entities/appointment";
 import { toSantiago } from "@/utils/dateUtils";
+import { useIsAdmin } from "@/stores/useRoleStore";
+import { NotAuthorized } from "@/components/ui/NotAuthorized";
 
 export default function EditAppointmentScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
+  const isAdmin = useIsAdmin();
   const { update } = useAppointments();
   const [appointment, setAppointment] = useState<Appointment | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -59,7 +62,7 @@ export default function EditAppointmentScreen() {
     ]);
   };
 
-  const handleSubmit = async (data: Omit<CreateAppointmentDTO, "userId">) => {
+  const handleSubmit = async (data: Omit<CreateAppointmentDTO, "userId" | "ownerId">) => {
     if (!id) return;
     setIsLoading(true);
     const result = await update(id, data);
@@ -74,6 +77,7 @@ export default function EditAppointmentScreen() {
   };
 
   if (isFetching) return <LoadingSpinner fullScreen />;
+  if (!isAdmin) return <NotAuthorized />;
 
   const defaultValues = appointment
     ? {

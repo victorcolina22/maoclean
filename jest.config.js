@@ -3,6 +3,7 @@ module.exports = {
   preset: 'ts-jest',
   testEnvironment: 'node',
   moduleNameMapper: {
+    '^@/utils/intlPolyfill$': '<rootDir>/utils/intlPolyfill.mock.ts',
     '^@/(.*)$': '<rootDir>/$1',
   },
   transform: {

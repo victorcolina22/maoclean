@@ -4,6 +4,7 @@ import dayjs from "dayjs";
 import type { DerivedClient } from "@/utils/clientUtils";
 import { formatCLP } from "@/utils/formatUtils";
 import { PhoneLink } from "@/components/ui/PhoneLink";
+import { useIsAdmin } from "@/stores/useRoleStore";
 
 interface ClientRowProps {
   client: DerivedClient;
@@ -11,6 +12,7 @@ interface ClientRowProps {
 }
 
 export function ClientRow({ client, onPress }: ClientRowProps) {
+  const isAdmin = useIsAdmin();
   const lastVisitDate = dayjs(client.lastVisitAt.toDate()).format("D MMM YYYY");
 
   return (
@@ -39,9 +41,11 @@ export function ClientRow({ client, onPress }: ClientRowProps) {
           )}
         </View>
         <View className="items-end">
-          <Text className="text-base font-bold text-neutral-900">
-            {formatCLP(client.totalSpent)}
-          </Text>
+          {isAdmin && (
+            <Text className="text-base font-bold text-neutral-900">
+              {formatCLP(client.totalSpent)}
+            </Text>
+          )}
           <Text className="text-xs text-neutral-400">
             {client.appointmentCount}{" "}
             {client.appointmentCount === 1 ? "cita" : "citas"}
@@ -54,7 +58,7 @@ export function ClientRow({ client, onPress }: ClientRowProps) {
         <Text className="text-xs text-neutral-400">
           Última visita: {lastVisitDate}
         </Text>
-        {client.pendingBalance > 0 && (
+        {isAdmin && client.pendingBalance > 0 && (
           <View className="bg-amber-50 px-2 py-0.5 rounded-full">
             <Text className="text-xs font-medium text-amber-700">
               Por cobrar: {formatCLP(client.pendingBalance)}

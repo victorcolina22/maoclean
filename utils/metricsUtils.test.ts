@@ -21,6 +21,7 @@ const DEFAULT_DATE = new Date('2026-05-01T10:00:00Z')
 function makeAppt(overrides: Partial<Appointment> = {}): Appointment {
   return {
     id: 'appt-default',
+    ownerId: 'user-1',
     userId: 'user-1',
     clientName: 'Cliente Default',
     clientPhone: '+56912345678',

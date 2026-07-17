@@ -17,11 +17,13 @@ import { formatCLP } from '@/utils/formatUtils'
 import { PhoneLink } from '@/components/ui/PhoneLink'
 import { summarizeItems } from '@/constants/services'
 import { remainingBalance } from '@/utils/paymentUtils'
+import { useIsAdmin } from '@/stores/useRoleStore'
 
 export default function AppointmentDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>()
   const router = useRouter()
   const { remove, addPayment } = useAppointments()
+  const isAdmin = useIsAdmin()
   const [appointment, setAppointment] = useState<Appointment | null>(null)
   const [isLoading, setIsLoading] = useState(true)
 
@@ -64,7 +66,7 @@ export default function AppointmentDetailScreen() {
   }
 
   const handleMarkPaid = async () => {
-    if (!appointment) return
+    if (!appointment || appointment.price === undefined || appointment.amountPaid === undefined) return
     const remaining = remainingBalance(appointment.price, appointment.amountPaid)
     if (remaining <= 0) return
     await handleAddPayment(remaining, 'Marcado como pagado')
@@ -115,25 +117,32 @@ export default function AppointmentDetailScreen() {
           <Row label="Duración" value={formatDuration(appointment.estimatedDuration)} />
           <Row label="Dirección" value={appointment.location.address} />
           <Row label="Comuna" value={appointment.location.commune} />
-          <View className="flex-row justify-between items-center">
-            <Text className="text-sm text-neutral-500">Precio</Text>
-            <View className="flex-row items-center gap-2">
-              <Text className="text-base font-semibold text-neutral-900">
-                {formatCLP(appointment.price)}
-              </Text>
-              <PaymentBadge status={appointment.paymentStatus} />
+          {isAdmin && appointment.price !== undefined && (
+            <View className="flex-row justify-between items-center">
+              <Text className="text-sm text-neutral-500">Precio</Text>
+              <View className="flex-row items-center gap-2">
+                <Text className="text-base font-semibold text-neutral-900">
+                  {formatCLP(appointment.price)}
+                </Text>
+                {appointment.paymentStatus && (
+                  <PaymentBadge status={appointment.paymentStatus} />
+                )}
+              </View>
             </View>
-          </View>
+          )}
           {appointment.notes && <Row label="Notas" value={appointment.notes} />}
         </View>
       </Card>
 
-      <PaymentSection
-        appointment={appointment}
-        onAddPayment={handleAddPayment}
-        onMarkPaid={handleMarkPaid}
-      />
+      {isAdmin && (
+        <PaymentSection
+          appointment={appointment}
+          onAddPayment={handleAddPayment}
+          onMarkPaid={handleMarkPaid}
+        />
+      )}
 
+      {isAdmin && (
       <View className="gap-3 mb-8">
         <Button
           label="Editar cita"
@@ -148,6 +157,7 @@ export default function AppointmentDetailScreen() {
           fullWidth
         />
       </View>
+      )}
     </ScrollView>
   )
 }

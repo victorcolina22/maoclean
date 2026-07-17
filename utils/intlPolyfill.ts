@@ -11,18 +11,18 @@
 // top-level code once per process (Metro doesn't clear it on Fast Refresh
 // unless this exact file changes, and this file has no React component to
 // trigger that).
-import "@formatjs/intl-getcanonicallocales/polyfill-force";
-import "@formatjs/intl-locale/polyfill-force";
-import "@formatjs/intl-pluralrules/polyfill-force";
+import "@formatjs/intl-getcanonicallocales/polyfill-force.js";
+import "@formatjs/intl-locale/polyfill-force.js";
+import "@formatjs/intl-pluralrules/polyfill-force.js";
 import "@formatjs/intl-pluralrules/locale-data/en";
 import "@formatjs/intl-pluralrules/locale-data/es";
-import "@formatjs/intl-numberformat/polyfill-force";
+import "@formatjs/intl-numberformat/polyfill-force.js";
 import "@formatjs/intl-numberformat/locale-data/en";
 import "@formatjs/intl-numberformat/locale-data/es";
 import "@formatjs/intl-numberformat/locale-data/es-CL";
-import "@formatjs/intl-datetimeformat/polyfill-force";
+import "@formatjs/intl-datetimeformat/polyfill-force.js";
 import "@formatjs/intl-datetimeformat/locale-data/en";
-import "@formatjs/intl-datetimeformat/add-all-tz";
+import "@formatjs/intl-datetimeformat/add-all-tz.js";
 
 // dayjs's `.tz()` INSTANCE method (dayjs(date).tz(zone), used all over the
 // calendar code) doesn't call Intl.DateTimeFormat at all — it calls the

@@ -2,16 +2,58 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
+    // NOTE: role/ownerId are trusted ONLY from request.auth.token (Firebase
+    // Auth Custom Claims — signed, server-set only, via the admin SDK
+    // provisioning script). Never trust a `role`/`ownerId` field read out of
+    // a Firestore document for authorization decisions: a user can freely
+    // write their own /users/{uid} doc below, so a document field would let
+    // anyone self-promote to admin.
     match /users/{userId} {
       allow read, write: if request.auth != null
                          && request.auth.uid == userId;
     }
 
     match /appointments/{appointmentId} {
-      allow read, update, delete: if request.auth != null
-                                  && request.auth.uid == resource.data.userId;
+      // Pre-migration documents don't have `ownerId` yet (see
+      // services/dataModelMigration.ts) — the one-time migration needs to
+      // read/backfill them before the normal ownerId-based rule can apply.
+      // Scoped narrowly: only the admin whose uid is the doc's original
+      // `userId` (i.e. the account that actually owns this legacy data) can
+      // touch it, and only while `ownerId` is still absent.
+      function isLegacyOwnerMigrating() {
+        return !('ownerId' in resource.data)
+               && request.auth.token.role == 'admin'
+               && request.auth.uid == resource.data.userId;
+      }
+
+      allow read: if request.auth != null
+                  && (request.auth.token.ownerId == resource.data.ownerId
+                      || isLegacyOwnerMigrating());
+
       allow create: if request.auth != null
-                    && request.auth.uid == request.resource.data.userId;
+                    && request.auth.token.role == 'admin'
+                    && request.auth.token.ownerId == request.resource.data.ownerId
+                    && request.resource.data.userId == request.auth.uid;
+
+      allow update: if request.auth != null
+                    && request.auth.token.role == 'admin'
+                    && (request.auth.token.ownerId == resource.data.ownerId
+                        || isLegacyOwnerMigrating());
+
+      allow delete: if request.auth != null
+                    && request.auth.token.role == 'admin'
+                    && request.auth.token.ownerId == resource.data.ownerId;
+    }
+
+    // Aggregated price/payment data for the whole org, keyed by appointment
+    // id (see services/pricingRepository.ts) — deliberately NOT nested under
+    // /appointments so a viewer's document-level read access to an
+    // appointment can never expose pricing: this is a wholly separate
+    // document with its own (admin-only) rule.
+    match /orgs/{ownerId}/private/{document=**} {
+      allow read, write: if request.auth != null
+                         && request.auth.token.role == 'admin'
+                         && request.auth.token.ownerId == ownerId;
     }
   }
 }

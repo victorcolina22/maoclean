@@ -1,5 +1,6 @@
 import { initializeApp, getApps } from 'firebase/app'
-import { initializeAuth, getAuth, inMemoryPersistence } from 'firebase/auth'
+import { initializeAuth, getAuth, getReactNativePersistence } from 'firebase/auth'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 import { getFirestore } from 'firebase/firestore'
 
 const firebaseConfig = {
@@ -14,10 +15,22 @@ const firebaseConfig = {
 const isNewApp = getApps().length === 0
 const app = isNewApp ? initializeApp(firebaseConfig) : getApps()[0]
 
-// Firebase 12 removed getReactNativePersistence from the public API.
-// inMemoryPersistence is used until a custom AsyncStorage adapter is implemented.
-export const auth = isNewApp
-  ? initializeAuth(app, { persistence: inMemoryPersistence })
-  : getAuth(app)
+// Persist the session per-device via AsyncStorage — required for the
+// multi-account role model (each device stays logged in as its own
+// owner/employee account across restarts, instead of everyone sharing one
+// auto-logged-in admin session).
+// TODO(cleanup): temporary diagnostic try/catch — remove once persistence
+// is confirmed working across a real app restart.
+let persistedAuth
+try {
+  persistedAuth = isNewApp
+    ? initializeAuth(app, { persistence: getReactNativePersistence(AsyncStorage) })
+    : getAuth(app)
+  console.log('[firebase] initializeAuth with getReactNativePersistence succeeded, isNewApp=', isNewApp)
+} catch (e) {
+  console.error('[firebase] initializeAuth with getReactNativePersistence THREW:', e)
+  persistedAuth = getAuth(app)
+}
+export const auth = persistedAuth
 
 export const db = getFirestore(app)

@@ -17,14 +17,15 @@ import { useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useDrawerStore } from "@/stores/useDrawerStore";
 import { useAuthStore } from "@/stores/useAuthStore";
+import { useIsAdmin } from "@/stores/useRoleStore";
 import { logout } from "@/services/authService";
 import { Ionicons } from "@expo/vector-icons";
 
 type IoniconsName = React.ComponentProps<typeof Ionicons>["name"];
 
-const NAV_ITEMS: Array<{ icon: IoniconsName; label: string; route: string }> = [
+const NAV_ITEMS: Array<{ icon: IoniconsName; label: string; route: string; adminOnly?: boolean }> = [
   { icon: "people-outline", label: "Clientes", route: "/clientes" },
-  { icon: "bar-chart-outline", label: "Métricas", route: "/metricas" },
+  { icon: "bar-chart-outline", label: "Métricas", route: "/metricas", adminOnly: true },
   { icon: "notifications-outline", label: "Notificaciones", route: "/notificaciones" },
   { icon: "settings-outline", label: "Ajustes", route: "/ajustes" },
 ];
@@ -36,6 +37,7 @@ export default function NavigationDrawer() {
   const isOpen = useDrawerStore((s) => s.isOpen);
   const close = useDrawerStore((s) => s.close);
   const user = useAuthStore((s) => s.user);
+  const isAdmin = useIsAdmin();
   const insets = useSafeAreaInsets();
   const router = useRouter();
 
@@ -109,7 +111,7 @@ export default function NavigationDrawer() {
 
         {/* Nav items */}
         <View className="flex-1 py-2">
-          {NAV_ITEMS.map((item) => (
+          {NAV_ITEMS.filter((item) => !item.adminOnly || isAdmin).map((item) => (
             <Pressable
               key={item.route}
               onPress={() => handleNavItem(item.route)}

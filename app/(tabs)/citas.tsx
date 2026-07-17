@@ -17,6 +17,7 @@ import { MonthGrid } from "@/components/calendar/MonthGrid";
 import { WeekTimeline } from "@/components/calendar/WeekTimeline";
 import { useCalendarGrouping } from "@/hooks/useCalendarGrouping";
 import { useAppointmentsStore } from "@/stores/useAppointmentsStore";
+import { useIsAdmin } from "@/stores/useRoleStore";
 import Entypo from "@expo/vector-icons/Entypo";
 
 const STATUS_FILTERS: { label: string; value: AppointmentStatus | "all" }[] = [
@@ -29,6 +30,7 @@ const STATUS_FILTERS: { label: string; value: AppointmentStatus | "all" }[] = [
 
 export default function CitasScreen() {
   const router = useRouter();
+  const isAdmin = useIsAdmin();
   const { appointments, isLoading } = useAllAppointments();
   const [statusFilter, setStatusFilter] = useState<AppointmentStatus | "all">(
     "all",
@@ -75,12 +77,14 @@ export default function CitasScreen() {
       <AppBar
         title="Citas"
         rightSlot={
-          <Pressable
-            onPress={() => router.push("/appointment/new")}
-            className="bg-primary-600 rounded-xl px-4 py-2"
-          >
-            <Text className="text-white font-semibold">+ Nueva</Text>
-          </Pressable>
+          isAdmin ? (
+            <Pressable
+              onPress={() => router.push("/appointment/new")}
+              className="bg-primary-600 rounded-xl px-4 py-2"
+            >
+              <Text className="text-white font-semibold">+ Nueva</Text>
+            </Pressable>
+          ) : undefined
         }
       />
 
@@ -227,10 +231,12 @@ export default function CitasScreen() {
                       : "No hay citas con este filtro."
                   }
                   action={
-                    <Button
-                      label="Nueva cita"
-                      onPress={() => router.push("/appointment/new")}
-                    />
+                    isAdmin ? (
+                      <Button
+                        label="Nueva cita"
+                        onPress={() => router.push("/appointment/new")}
+                      />
+                    ) : undefined
                   }
                 />
               }

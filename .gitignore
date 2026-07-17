@@ -35,6 +35,10 @@ yarn-error.*
 .env*
 .env*.local
 
+# Firebase Admin SDK service account key (see scripts/provisionAccount.js) —
+# never commit this, it's full admin access to the Firebase project.
+serviceAccountKey*.json
+
 # typescript
 *.tsbuildinfo
 

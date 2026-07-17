@@ -21,7 +21,11 @@ const FLAG_KEY = "tzFixReminderResync_v1";
 // the whole migration finishes.
 let runningForUserId: string | null = null;
 
-export async function resyncRemindersOnce(userId: string): Promise<void> {
+// userId: the signed-in account, used for its own personal reminder
+// settings (each person can have different remind24h/remind1h prefs).
+// ownerId: the org whose shared appointments to reschedule reminders for
+// (may equal userId for the owner account itself).
+export async function resyncRemindersOnce(userId: string, ownerId: string): Promise<void> {
   if (runningForUserId === userId) return;
 
   const alreadyRun = await AsyncStorage.getItem(FLAG_KEY);
@@ -31,7 +35,7 @@ export async function resyncRemindersOnce(userId: string): Promise<void> {
   try {
     // getAllForUser forces a server read (no local-cache ambiguity) so this
     // one-shot migration can't act on a stale/incomplete cached snapshot.
-    const result = await appointmentRepository.getAllForUser(userId);
+    const result = await appointmentRepository.getAllForUser(ownerId);
     if (!result.success) return;
 
     await cancelAllAppointmentReminders();

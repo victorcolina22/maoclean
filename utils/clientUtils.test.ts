@@ -22,6 +22,7 @@ function makeAppt(overrides: Partial<Appointment> = {}): Appointment {
   _apptId++
   return {
     id: `appt-${_apptId}`,
+    ownerId: 'user-1',
     userId: 'user-1',
     clientName: 'Cliente Default',
     clientPhone: '+56912345678',

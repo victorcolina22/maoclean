@@ -2,6 +2,7 @@ import React from "react";
 import { Pressable, View, Text } from "react-native";
 import { useRouter } from "expo-router";
 import { Appointment } from "@/domain/entities/appointment";
+import { useIsAdmin } from "@/stores/useRoleStore";
 import { Card } from "@/components/ui/Card";
 import { StatusBadge } from "./StatusBadge";
 import { PaymentBadge } from "./PaymentBadge";
@@ -21,6 +22,7 @@ interface AppointmentCardProps {
 
 export function AppointmentCard({ appointment }: AppointmentCardProps) {
   const router = useRouter();
+  const isAdmin = useIsAdmin();
   const deliveryStatus = computeDeliveryStatus(
     appointment.deliveryDate,
     appointment.status,
@@ -51,15 +53,19 @@ export function AppointmentCard({ appointment }: AppointmentCardProps) {
         <View className="flex-row justify-between items-center">
           <View className="flex-row gap-2">
             <StatusBadge status={appointment.status} />
-            <PaymentBadge status={appointment.paymentStatus} />
+            {isAdmin && appointment.paymentStatus && (
+              <PaymentBadge status={appointment.paymentStatus} />
+            )}
             {(deliveryStatus === "soon" || deliveryStatus === "late") && (
               <DeliveryStatusBadge status={deliveryStatus} />
             )}
           </View>
           <View className="items-end">
-            <Text className="text-sm font-semibold text-neutral-800">
-              {formatCLP(appointment.price)}
-            </Text>
+            {isAdmin && appointment.price !== undefined && (
+              <Text className="text-sm font-semibold text-neutral-800">
+                {formatCLP(appointment.price)}
+              </Text>
+            )}
             <Text className="text-xs text-neutral-400">
               {formatDuration(appointment.estimatedDuration)}
             </Text>

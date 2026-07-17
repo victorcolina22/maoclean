@@ -1,5 +1,6 @@
 import { useEffect, useCallback, useState } from "react";
 import { useAuthStore } from "@/stores/useAuthStore";
+import { useRoleStore } from "@/stores/useRoleStore";
 import { useAppointmentsStore } from "@/stores/useAppointmentsStore";
 import { useProximityStore } from "@/stores/useProximityStore";
 import { appointmentRepository } from "@/services/appointmentRepository";
@@ -19,6 +20,7 @@ import {
 
 export function useAppointments() {
   const { user } = useAuthStore();
+  const ownerId = useRoleStore((s) => s.ownerId);
 
   const resolveSettings = async () => {
     if (!user?.uid) return DEFAULT_NOTIFICATION_SETTINGS
@@ -37,12 +39,12 @@ export function useAppointments() {
   const { setSuggestions } = useProximityStore();
 
   useEffect(() => {
-    if (!user) return;
+    if (!ownerId) return;
 
     setLoading(true);
 
     const unsubscribe = appointmentRepository.subscribeToDate(
-      user.uid,
+      ownerId,
       selectedDate,
       (updated) => {
         setAppointments(updated);
@@ -52,15 +54,16 @@ export function useAppointments() {
     );
 
     return unsubscribe;
-  }, [user, selectedDate]);
+  }, [ownerId, selectedDate]);
 
   const create = useCallback(
-    async (data: Omit<CreateAppointmentDTO, "userId">) => {
-      if (!user) return { success: false, error: "No autenticado" };
+    async (data: Omit<CreateAppointmentDTO, "userId" | "ownerId">) => {
+      if (!user || !ownerId) return { success: false, error: "No autenticado" };
 
       const result = await appointmentRepository.create({
         ...data,
         userId: user.uid,
+        ownerId,
       });
       if (result.success) {
         const settings = await resolveSettings()
@@ -70,7 +73,7 @@ export function useAppointments() {
       }
       return result;
     },
-    [user],
+    [user, ownerId],
   );
 
   const update = useCallback(async (id: string, data: UpdateAppointmentDTO) => {
@@ -100,19 +103,19 @@ export function useAppointments() {
   return { appointments, isLoading, error, create, update, remove, addPayment };
 }
 
-// fin all appointments for the user, regardless of date. Useful for calendar view or similar features.
+// All appointments for the org, regardless of date. Useful for calendar view or similar features.
 export function useAllAppointments() {
-  const { user } = useAuthStore();
+  const ownerId = useRoleStore((s) => s.ownerId);
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    if (!user) return;
+    if (!ownerId) return;
 
     setIsLoading(true);
 
     const unsubscribe = appointmentRepository.subscribeToAll(
-      user.uid,
+      ownerId,
       (updated) => {
         setAppointments(updated);
         setIsLoading(false);
@@ -120,7 +123,7 @@ export function useAllAppointments() {
     );
 
     return unsubscribe;
-  }, [user]);
+  }, [ownerId]);
 
   return { appointments, isLoading };
 }

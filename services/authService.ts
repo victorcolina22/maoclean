@@ -18,14 +18,6 @@ export async function login(
     return err("Correo o contraseña incorrectos. Intenta de nuevo.");
   }
 }
-export async function autoLogin(): Promise<void> {
-  if (auth.currentUser) return;
-  const email = process.env.EXPO_PUBLIC_ADMIN_EMAIL;
-  const password = process.env.EXPO_PUBLIC_ADMIN_PASSWORD;
-  if (!email || !password) return;
-  await signInWithEmailAndPassword(auth, email, password).catch(() => {});
-}
-
 export async function logout(): Promise<Result<void>> {
   try {
     await signOut(auth);

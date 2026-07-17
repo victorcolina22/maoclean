@@ -16,6 +16,13 @@ interface PaymentSectionProps {
 
 export function PaymentSection({ appointment, onAddPayment, onMarkPaid }: PaymentSectionProps) {
   const { price, amountPaid, paymentStatus, paymentHistory } = appointment
+  // This component is only ever mounted for admin reads, where the
+  // repository always merges in pricing data — but the type is honest that
+  // it CAN be absent (e.g. a viewer somehow reaching this code path), so
+  // bail out rather than rendering with bogus numbers.
+  if (price === undefined || amountPaid === undefined || !paymentStatus || !paymentHistory) {
+    return null
+  }
   const remaining = remainingBalance(price, amountPaid)
   const progressPct = price > 0 ? Math.min(100, (amountPaid / price) * 100) : 0
 
