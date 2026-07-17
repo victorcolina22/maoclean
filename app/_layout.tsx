@@ -5,6 +5,9 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { onAuthChange, autoLogin } from "@/services/authService";
 import { requestNotificationPermission } from "@/services/notificationService";
+// TODO(cleanup): part of the one-time reminder resync migration — see
+// services/notificationMigration.ts for removal notes.
+import { resyncRemindersOnce } from "@/services/notificationMigration";
 
 export default function RootLayout() {
   const { setUser, setLoading } = useAuthStore();
@@ -13,6 +16,7 @@ export default function RootLayout() {
     const unsubscribe = onAuthChange((firebaseUser) => {
       setUser(firebaseUser);
       setLoading(false);
+      if (firebaseUser) resyncRemindersOnce(firebaseUser.uid);
     });
     autoLogin();
     requestNotificationPermission();

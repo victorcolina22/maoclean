@@ -1,3 +1,4 @@
+import "@/utils/intlPolyfill";
 import dayjs from "dayjs";
 import timezone from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";
@@ -17,16 +18,17 @@ dayjs.locale("es");
 
 export const SCHEDULED_AT_FORMAT = "YYYY-MM-DDTHH:mm";
 
-export function parseScheduledAt(value: string): dayjs.Dayjs {
-  return dayjs(value, SCHEDULED_AT_FORMAT, true);
-}
+export const TZ = "America/Santiago";
 
-const TZ = "America/Santiago";
+export function parseScheduledAt(value: string): dayjs.Dayjs {
+  const isValidFormat = dayjs(value, SCHEDULED_AT_FORMAT, true).isValid();
+  if (!isValidFormat) return dayjs(NaN);
+  return dayjs.tz(value, SCHEDULED_AT_FORMAT, TZ);
+}
 
 export function toSantiago(date: Date | Timestamp): dayjs.Dayjs {
   const d = date instanceof Timestamp ? date.toDate() : date;
-  // return dayjs(d).tz(TZ);
-  return dayjs(d);
+  return dayjs(d).tz(TZ);
 }
 
 export function formatDate(date: Date | Timestamp): string {

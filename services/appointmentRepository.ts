@@ -8,6 +8,7 @@ import {
   query,
   where,
   getDocs,
+  getDocsFromServer,
   onSnapshot,
   serverTimestamp,
   Timestamp,
@@ -180,6 +181,16 @@ export const appointmentRepository: IAppointmentRepository = {
       const appointments = snap.docs.map((d) => toAppointment(d));
       callback(appointments);
     });
+  },
+
+  async getAllForUser(userId: string): Promise<Result<Appointment[]>> {
+    try {
+      const q = query(collection(db, COL), where("userId", "==", userId));
+      const snap = await getDocsFromServer(q);
+      return ok(snap.docs.map((d) => toAppointment(d)));
+    } catch {
+      return err("No se pudieron cargar las citas.");
+    }
   },
 
   async addPayment(id: string, entry: PaymentEntry): Promise<Result<Appointment>> {

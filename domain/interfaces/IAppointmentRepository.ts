@@ -23,4 +23,5 @@ export interface IAppointmentRepository {
     userId: string,
     callback: (appointments: Appointment[]) => void,
   ): Unsubscribe;
+  getAllForUser(userId: string): Promise<Result<Appointment[]>>;
 }

@@ -4,7 +4,7 @@ import RNDateTimePicker, {
   DateTimePickerEvent,
 } from "@react-native-community/datetimepicker";
 import dayjs from "dayjs";
-import { SCHEDULED_AT_FORMAT, parseScheduledAt } from "@/utils/dateUtils";
+import { parseScheduledAt, TZ } from "@/utils/dateUtils";
 
 type Step = "idle" | "date" | "time";
 
@@ -35,7 +35,8 @@ const TIME_SLOTS: TimeSlot[] = Array.from({ length: (22 - 7) * 4 + 1 }, (_, i) =
 });
 
 function nearestSlotIndex(date: Date): number {
-  const total = date.getHours() * 60 + date.getMinutes();
+  const santiago = dayjs(date).tz(TZ);
+  const total = santiago.hour() * 60 + santiago.minute();
   let best = 0;
   let bestDiff = Infinity;
   TIME_SLOTS.forEach((slot, i) => {
@@ -85,11 +86,15 @@ export function DateTimePickerField({ label, value, onChange, error }: Props) {
 
   // ── Time slot (cross-platform) ────────────────────────────────────────────
   const onSlotSelect = (slot: TimeSlot) => {
-    const merged = dayjs(pendingDate.current)
-      .hour(slot.hour)
-      .minute(slot.minute)
-      .second(0);
-    onChange(merged.format(SCHEDULED_AT_FORMAT));
+    // Build the string from the Santiago-anchored calendar day + the slot's
+    // plain hour/minute, instead of calling dayjs's device-local `.hour()`/
+    // `.minute()` setters — those aren't reliable once a value has been
+    // through `.tz()`, and this way the picker always writes/reads the same
+    // business timezone regardless of the device's own OS timezone.
+    const datePart = dayjs(pendingDate.current).tz(TZ).format("YYYY-MM-DD");
+    const hh = String(slot.hour).padStart(2, "0");
+    const mm = String(slot.minute).padStart(2, "0");
+    onChange(`${datePart}T${hh}:${mm}`);
     setStep("idle");
   };
 
