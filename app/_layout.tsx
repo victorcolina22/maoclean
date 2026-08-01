@@ -1,8 +1,10 @@
 import "../global.css";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Stack } from "expo-router";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
+import { ForceUpdateScreen } from "@/components/ui/ForceUpdateScreen";
+import { checkAppVersion } from "@/services/appVersionService";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { useRoleStore } from "@/stores/useRoleStore";
 import { onAuthChange } from "@/services/authService";
@@ -18,6 +20,19 @@ import type { Role } from "@/domain/entities/user";
 export default function RootLayout() {
   const { user, isLoading, setUser, setLoading } = useAuthStore();
   const { setClaims, clear: clearRole } = useRoleStore();
+  const [versionCheck, setVersionCheck] = useState<
+    { status: "checking" } | { status: "ok" } | { status: "blocked"; latestApkUrl?: string }
+  >({ status: "checking" });
+
+  useEffect(() => {
+    checkAppVersion().then((result) => {
+      setVersionCheck(
+        result.isSupported
+          ? { status: "ok" }
+          : { status: "blocked", latestApkUrl: result.latestApkUrl },
+      );
+    });
+  }, []);
 
   useEffect(() => {
     const unsubscribe = onAuthChange((firebaseUser) => {
@@ -48,10 +63,14 @@ export default function RootLayout() {
     return unsubscribe;
   }, []);
 
-  if (isLoading) {
-    // Avoid a flash of the login screen while the persisted session (if
-    // any) is still being restored from AsyncStorage.
+  if (versionCheck.status === "checking" || isLoading) {
+    // Avoid a flash of the login screen while the version check and/or the
+    // persisted session (if any) are still being resolved.
     return <LoadingSpinner fullScreen />;
+  }
+
+  if (versionCheck.status === "blocked") {
+    return <ForceUpdateScreen latestApkUrl={versionCheck.latestApkUrl} />;
   }
 
   return (

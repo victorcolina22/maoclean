@@ -2,6 +2,16 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
+    // Force-update gate (see services/appVersionService.ts) — public,
+    // unauthenticated read so an outdated client can be told to update
+    // before it ever reaches the login screen. Written manually via the
+    // Firebase Console when cutting a build meant to retire older ones —
+    // no in-app write path on purpose (infrequent, low-risk to do by hand).
+    match /config/appVersion {
+      allow read: if true;
+      allow write: if false;
+    }
+
     // NOTE: role/ownerId are trusted ONLY from request.auth.token (Firebase
     // Auth Custom Claims — signed, server-set only, via the admin SDK
     // provisioning script). Never trust a `role`/`ownerId` field read out of
