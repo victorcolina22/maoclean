@@ -72,18 +72,18 @@ export default function NavigationDrawer() {
 
   return (
     <View
-      style={[StyleSheet.absoluteFillObject, { zIndex: 50 }]}
+      style={[StyleSheet.absoluteFill, { zIndex: 50 }]}
       pointerEvents={isOpen ? "auto" : "none"}
     >
       {/* Backdrop */}
       <Animated.View
         style={[
-          StyleSheet.absoluteFillObject,
+          StyleSheet.absoluteFill,
           { backgroundColor: "#000" },
           backdropStyle,
         ]}
       >
-        <Pressable style={StyleSheet.absoluteFillObject} onPress={close} />
+        <Pressable style={StyleSheet.absoluteFill} onPress={close} />
       </Animated.View>
 
       {/* Panel */}
