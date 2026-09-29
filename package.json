@@ -13,7 +13,9 @@
     "lint": "expo lint",
     "test": "jest",
     "provision:bootstrap-owner": "node scripts/provisionAccount.js bootstrap-owner",
-    "provision:employee": "node scripts/provisionAccount.js create-employee"
+    "provision:employee": "node scripts/provisionAccount.js create-employee",
+    "provision:promote-admin": "node scripts/provisionAccount.js promote-admin",
+    "provision:rollback": "node scripts/provisionAccount.js rollback"
   },
   "dependencies": {
     "@expo/vector-icons": "15.0.3",
