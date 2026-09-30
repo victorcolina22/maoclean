@@ -50,3 +50,6 @@ app-example
 
 # provisioning backups (contain emails/uids)
 scripts/backups/
+
+# skill registry cache (machine-local, regenerated automatically)
+.atl/.skill-registry.cache.json
