@@ -21,7 +21,9 @@ export default function RootLayout() {
   const { user, isLoading, setUser, setLoading } = useAuthStore();
   const { setClaims, clear: clearRole } = useRoleStore();
   const [versionCheck, setVersionCheck] = useState<
-    { status: "checking" } | { status: "ok" } | { status: "blocked"; latestApkUrl?: string }
+    | { status: "checking" }
+    | { status: "ok" }
+    | { status: "blocked"; latestApkUrl?: string }
   >({ status: "checking" });
 
   useEffect(() => {
@@ -90,15 +92,15 @@ export default function RootLayout() {
           <Stack.Screen name="metricas" options={{ headerShown: false }} />
           <Stack.Screen
             name="notificaciones"
-            options={{ headerShown: true, title: "Notificaciones" }}
+            options={{ headerShown: false, title: "Notificaciones" }}
           />
           <Stack.Screen
             name="ajustes"
-            options={{ headerShown: true, title: "Ajustes" }}
+            options={{ headerShown: false, title: "Ajustes" }}
           />
           <Stack.Screen
             name="ajustes/zonas"
-            options={{ headerShown: true, title: "Zonas" }}
+            options={{ headerShown: false, title: "Zonas" }}
           />
           <Stack.Screen name="filter" options={{ headerShown: false }} />
         </Stack.Protected>
