@@ -128,7 +128,7 @@ export default function CitasScreen() {
               <Pressable
                 key={f.value}
                 onPress={() => setStatusFilter(f.value)}
-                className={`px-4 py-2 rounded-full border ${
+                className={`px-4 py-2 h-10 rounded-full border ${
                   statusFilter === f.value
                     ? "bg-primary-600 border-primary-600"
                     : "bg-white border-neutral-200"
@@ -149,7 +149,7 @@ export default function CitasScreen() {
 
           {/* Commune zone filter */}
           {communeChips.length > 0 && (
-            <View className="px-4 pb-2">
+            <View className="px-4 py-2">
               <Text className="text-xs font-medium text-neutral-400 mb-2 uppercase tracking-wide">
                 Por zona
               </Text>
