@@ -31,7 +31,6 @@ import {
   PaymentStatus,
 } from "@/domain/entities/appointment";
 import { SERVICE_LABELS } from "@/constants/services";
-import { SANTIAGO_COMMUNES } from "@/constants/communes";
 import { parseScheduledAt } from "@/utils/dateUtils";
 import { formatCLP } from "@/utils/formatUtils";
 import ItemRow from "./ItemRow";
@@ -59,7 +58,9 @@ interface FormValues {
 
 interface AppointmentFormProps {
   defaultValues?: Partial<FormValues>;
-  onSubmit: (data: Omit<CreateAppointmentDTO, "userId" | "ownerId">) => Promise<void>;
+  onSubmit: (
+    data: Omit<CreateAppointmentDTO, "userId" | "ownerId">,
+  ) => Promise<void>;
   isLoading?: boolean;
   submitLabel?: string;
   onFinalize?: () => void;
